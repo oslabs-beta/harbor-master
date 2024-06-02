@@ -3,8 +3,8 @@ import express, { Express, Request, Response } from 'express';
 const port = 8080;
 const app: Express = express();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('This is express');
+app.get('/api/', (req: Request, res: Response) => {
+  res.json({ AppName: 'Master-Harbor' });
 });
 
 app.listen(port, () => {
