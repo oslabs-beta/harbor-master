@@ -6,12 +6,12 @@ const VertexSchema = require('./VertexSchema');
 const EdgeSchema = require('./EdgeSchema');
 
 const ProjectSchema = new Schema<Project>({
-  userId: String,
-  googleCloudId: String,
-  createdAt: String,
-  googleRegion: String,
-  vertices: [VertexSchema],
-  edges: [EdgeSchema]
+  userId: { type: String, required: true },
+  googleCloudId: { type: String, required: true },
+  createdAt: { type: String, required: true },
+  googleRegion: { type: String, required: true },
+  vertices: { type: [VertexSchema], required: true },
+  edges: { type: [EdgeSchema], required: true }
 });
 
 module.exports = ProjectSchema;
