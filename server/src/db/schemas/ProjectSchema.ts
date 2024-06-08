@@ -14,4 +14,8 @@ const ProjectSchema = new Schema<Project>({
   edges: { type: [EdgeSchema], required: true }
 });
 
+// TO-DO: figure out if creating new Project document automatically adds _id field to its new vertices and edges
+  // if so, need temporary id for each vertex and edge on front end until project saved
+  // if not, need permanent id generated for each vertex and edge on creation; in this case, VertexSchema and EdgeSchema may not be necessary
+
 module.exports = ProjectSchema;
