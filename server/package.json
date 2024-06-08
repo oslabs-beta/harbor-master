@@ -22,6 +22,7 @@
     "docker-cli-js": "^2.10.0",
     "express": "^4.19.2",
     "google-cloud-node": "^0.0.1-security",
+    "mongoose": "^8.4.1",
     "rimraf": "^5.0.7",
     "typescript": "^5.4.5",
     "yaml": "^2.4.3"
