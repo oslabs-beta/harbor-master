@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "baseUrl": "..",
+    "paths": {
+      "interfaces/*": ["interfaces/*"],
+      "types/*": ["types/*"]
+    },
     "esModuleInterop": true,
     "jsx": "react",
     "module": "esnext",
