@@ -2,13 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.js",
+  "main": "./src/server.ts",
   "scripts": {
     "build": "rimraf dist && npx tsc",
     "prestart": "npm run build",
     "start": "node dist/server.js",
     "preserve": "npm run build",
-    "serve": "concurrently \"tsc -w\" \"nodemon dist/server.js\"",
+    "serve": "concurrently \"tsc -w\" \"nodemon dist/server/src/server.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
