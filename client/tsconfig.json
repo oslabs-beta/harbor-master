@@ -5,8 +5,11 @@
       "interfaces/*": ["interfaces/*"],
       "types/*": ["types/*"]
     },
+    "outDir": "./dist/",
     "esModuleInterop": true,
     "jsx": "react",
+    "jsxFactory": "React.createElement",
+    "noImplicitAny": true,
     "module": "esnext",
     "moduleResolution": "node",
     "lib": ["dom", "esnext"],
@@ -14,5 +17,6 @@
     "sourceMap": true,
     "target": "esnext"
   },
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
