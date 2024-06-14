@@ -70,23 +70,23 @@ eval("\n\nif (false) {} else {\n  module.exports = __webpack_require__(/*! ./cjs
 
 /***/ }),
 
-/***/ "./client/App.tsx":
-/*!************************!*\
-  !*** ./client/App.tsx ***!
-  \************************/
+/***/ "./src/client/App.tsx":
+/*!****************************!*\
+  !*** ./src/client/App.tsx ***!
+  \****************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"./node_modules/react/index.js\"));\nvar App = function () {\n    return react_1.default.createElement(\"h1\", null, \"TypeScript is awesome\");\n};\nexports[\"default\"] = App;\n\n\n//# sourceURL=webpack://harbor-master/./client/App.tsx?");
+eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"./node_modules/react/index.js\"));\nvar App = function () {\n    return react_1.default.createElement(\"h1\", null, \"TypeScript is awesome\");\n};\nexports[\"default\"] = App;\n\n\n//# sourceURL=webpack://harbor-master/./src/client/App.tsx?");
 
 /***/ }),
 
-/***/ "./client/index.tsx":
-/*!**************************!*\
-  !*** ./client/index.tsx ***!
-  \**************************/
+/***/ "./src/client/index.tsx":
+/*!******************************!*\
+  !*** ./src/client/index.tsx ***!
+  \******************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"./node_modules/react/index.js\"));\nvar react_dom_1 = __importDefault(__webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\"));\nvar App_1 = __importDefault(__webpack_require__(/*! ./App */ \"./client/App.tsx\"));\nreact_dom_1.default.render(react_1.default.createElement(react_1.default.StrictMode, null,\n    react_1.default.createElement(App_1.default, null)), document.getElementById('app'));\n\n\n//# sourceURL=webpack://harbor-master/./client/index.tsx?");
+eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"./node_modules/react/index.js\"));\nvar react_dom_1 = __importDefault(__webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\"));\nvar App_1 = __importDefault(__webpack_require__(/*! ./App */ \"./src/client/App.tsx\"));\nreact_dom_1.default.render(react_1.default.createElement(react_1.default.StrictMode, null,\n    react_1.default.createElement(App_1.default, null)), document.getElementById('app'));\n\n\n//# sourceURL=webpack://harbor-master/./src/client/index.tsx?");
 
 /***/ })
 
@@ -134,7 +134,7 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./client/index.tsx");
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/client/index.tsx");
 /******/ 	
 /******/ })()
 ;
