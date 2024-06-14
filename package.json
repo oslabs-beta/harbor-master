@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:dev": "tsc --watch --preserveWatchOutput",
-    "start:dev": "nodemon dist/index.js & webpack -w"
+    "start:dev": "nodemon dist/server/server.js & webpack -w"
   },
   "keywords": [],
   "author": "",
