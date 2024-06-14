@@ -24,11 +24,11 @@ const graphSlice = createSlice({
   initialState,
   reducers: {
     /* individual state changes do NOT update the db - 
-    we'll have save button to update db with all graph changes since last save */
+    we'll have save button to batch update db with all graph changes since last save */
 
-    // use when loading project from grid view or creating new project from scratch
-    // creating new project should add new Project document to the db and immediately retrieve record
     setCurrentProject(state, action: PayloadAction<Project>) {
+      // use when loading project from grid view or creating new project from scratch
+      // creating new project should add new Project document to the db and immediately retrieve record
       Object.assign(state, action.payload);
     },
 
@@ -77,8 +77,6 @@ const graphSlice = createSlice({
       state.workingProject.edges.forEach(e => {
         if (e.id === action.payload.id) e.endpointVertexIds = action.payload.endpointVertexIds;
       });
-
-
     }
   }
 });
