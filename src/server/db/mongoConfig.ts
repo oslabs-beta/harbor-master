@@ -24,4 +24,4 @@ module.exports = {
   ProjectModel,
   VertexModel,
   EdgeModel
-}
+};
