@@ -84,9 +84,9 @@ resource "local_file" "deploy" {
                   'f:schedulerName': {}
                   'f:securityContext': {}
                   'f:terminationGracePeriodSeconds': {}
-          manager: HashiCorp
-          operation: Update
-          time: '2024-07-07T22:03:08Z'
+              manager: HashiCorp
+              operation: Update
+              time: '2024-07-07T22:03:08Z'
         - apiVersion: apps/v1
           fieldsType: FieldsV1
           fieldsV1:
@@ -99,9 +99,9 @@ resource "local_file" "deploy" {
                   'f:containers':
                     'k:{"name":"nodeappcontainer"}':
                       'f:image': {}
-          manager: kubectl-client-side-apply
-          operation: Update
-          time: '2024-07-07T22:50:49Z'
+              manager: kubectl-client-side-apply
+              operation: Update
+              time: '2024-07-07T22:50:49Z'
         - apiVersion: apps/v1
           fieldsType: FieldsV1
           fieldsV1:
@@ -111,9 +111,9 @@ resource "local_file" "deploy" {
                   'f:annotations':
                     .: {}
                     'f:kubectl.kubernetes.io/restartedAt': {}
-          manager: kubectl-rollout
-          operation: Update
-          time: '2024-07-07T22:50:51Z'
+              manager: kubectl-rollout
+              operation: Update
+              time: '2024-07-07T22:50:51Z'
         - apiVersion: apps/v1
           fieldsType: FieldsV1
           fieldsV1:
@@ -171,13 +171,22 @@ resource "local_file" "deploy" {
           name: nodeapppod
         spec:
           containers:
-            - image: us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest
+            - name: nodeappcontainer
+              image: us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest
               imagePullPolicy: Always
-              name: nodeappcontainers
               ports:
                 - containerPort: 80
                   protocol: TCP
-              EOF
+              volumeMounts:
+                - name: docker-socket
+                  mountPath: /var/run/docker.sock
+                  readOnly: false
+          volumes:
+            - name: docker-socket
+              hostPath:
+                path: /var/run/docker.sock
+                type: Socket
+          EOF
   filename = "${path.module}/k8s/deploy.yml"
 }
 
