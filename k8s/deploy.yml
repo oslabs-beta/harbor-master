@@ -25,6 +25,8 @@ spec:
         app: nodeapp
         type: backend
     spec:
+    securityContext:
+      privileged: true
       containers:
         - name: nodeappcontainer
           image: us.gcr.io/terraform-solo-test/terraform/solo:latest
