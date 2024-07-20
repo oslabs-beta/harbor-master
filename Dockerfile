@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-#Install terraform
+# Install Terraform
 RUN apt-get update && apt-get install -y \
     curl \
     apt-transport-https \
@@ -56,6 +56,9 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Set permissions for the entrypoint script
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Switch to the non-root user
+USER appuser
 
 # Set environment variables
 ENV DISPLAY=:99

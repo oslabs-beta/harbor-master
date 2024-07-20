@@ -1,123 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: nodeappdeployment
+  namespace: default
   labels:
     app: nodeapp
     type: backend
-  managedFields:
-    - apiVersion: apps/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations': {}
-          'f:labels':
-            .: {}
-            'f:app': {}
-            'f:type': {}
-        'f:spec':
-          'f:progressDeadlineSeconds': {}
-          'f:replicas': {}
-          'f:revisionHistoryLimit': {}
-          'f:selector': {}
-          'f:strategy':
-            'f:rollingUpdate':
-              .: {}
-              'f:maxSurge': {}
-              'f:maxUnavailable': {}
-            'f:type': {}
-          'f:template':
-            'f:metadata':
-              'f:labels':
-                .: {}
-                'f:app': {}
-                'f:type': {}
-              'f:name': {}
-            'f:spec':
-              'f:containers':
-                'k:{"name":"nodeappcontainer"}':
-                  .: {}
-                  'f:imagePullPolicy': {}
-                  'f:name': {}
-                  'f:ports':
-                    .: {}
-                    'k:{"containerPort":80,"protocol":"TCP"}':
-                      .: {}
-                      'f:containerPort': {}
-                      'f:protocol': {}
-                  'f:resources': {}
-                  'f:terminationMessagePath': {}
-                  'f:terminationMessagePolicy': {}
-              'f:dnsPolicy': {}
-              'f:restartPolicy': {}
-              'f:schedulerName': {}
-              'f:securityContext': {}
-              'f:terminationGracePeriodSeconds': {}
-      manager: HashiCorp
-      operation: Update
-      time: '2024-07-07T22:03:08Z'
-    - apiVersion: apps/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            'f:kubectl.kubernetes.io/last-applied-configuration': {}
-        'f:spec':
-          'f:template':
-            'f:spec':
-              'f:containers':
-                'k:{"name":"nodeappcontainer"}':
-                  'f:image': {}
-      manager: kubectl-client-side-apply
-      operation: Update
-      time: '2024-07-07T22:50:49Z'
-    - apiVersion: apps/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          'f:template':
-            'f:metadata':
-              'f:annotations':
-                .: {}
-                'f:kubectl.kubernetes.io/restartedAt': {}
-      manager: kubectl-rollout
-      operation: Update
-      time: '2024-07-07T22:50:51Z'
-    - apiVersion: apps/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            'f:deployment.kubernetes.io/revision': {}
-        'f:status':
-          'f:availableReplicas': {}
-          'f:conditions':
-            .: {}
-            'k:{"type":"Available"}':
-              .: {}
-              'f:lastTransitionTime': {}
-              'f:lastUpdateTime': {}
-              'f:message': {}
-              'f:reason': {}
-              'f:status': {}
-              'f:type': {}
-            'k:{"type":"Progressing"}':
-              .: {}
-              'f:lastTransitionTime': {}
-              'f:lastUpdateTime': {}
-              'f:message': {}
-              'f:reason': {}
-              'f:status': {}
-              'f:type': {}
-          'f:observedGeneration': {}
-          'f:readyReplicas': {}
-          'f:replicas': {}
-          'f:updatedReplicas': {}
-      manager: kube-controller-manager
-      operation: Update
-      subresource: status
-      time: '2024-07-07T22:51:02Z'
-  name: nodeappdeployment
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -136,12 +24,20 @@ spec:
       labels:
         app: nodeapp
         type: backend
-      name: nodeapppod
     spec:
       containers:
-        - image: us.gcr.io/terraform-solo-test/terraform/solo:latest
+        - name: nodeappcontainer
+          image: us.gcr.io/terraform-solo-test/terraform/solo:latest
           imagePullPolicy: Always
-          name: nodeappcontainers
           ports:
             - containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+              readOnly: false
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
