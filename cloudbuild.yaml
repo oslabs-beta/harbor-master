@@ -8,7 +8,7 @@ steps:
     id: 'docker-build'
     args:
       - 'build'
-      - 'v'
+      - '-v'
       - '/host/path:/container/path'
       - '-t'
       - 'us.gcr.io/terraform-solo-test/terraform/solo:latest'
