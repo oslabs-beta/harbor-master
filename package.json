@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "build:dev": "tsc --watch --preserveWatchOutput",
-    "start:dev": "nodemon dist/server/server.js & webpack -w"
+    "start:dev": "nodemon dist/server/server.js & webpack -w",
+    "build":"webpack --config ./webpack.config.js",
+    "start":"node dist/server/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "fs": "^0.0.1-security",
     "mongoose": "^8.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

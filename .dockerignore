@@ -89,7 +89,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -137,9 +136,4 @@ dist
 /.terraform
 creds.json
 ghtoken
-/copy
-entrypoint.sh
 terraform.*
-
-#customer info
-/customer
