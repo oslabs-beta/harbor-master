@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
 # Install gosu
 RUN apt-get update && apt-get install -y gosu
 
+# Install TypeScript globally
+RUN npm install -g typescript
+
 # Create a non-root user
 RUN useradd -m appuser
 
@@ -31,8 +34,6 @@ COPY . .
 
 # Build the application
 RUN npm run build
-
-RUN ^C
 
 # Set permissions for the application directory
 RUN chown -R appuser:appuser /app
