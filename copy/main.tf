@@ -247,6 +247,7 @@ provider "docker" {
 resource "docker_image" "image" {
   name = "us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest"
   build {
+    build_args = {"-v":"/host/path:/container/path"}
     context = ""
     remote_context = "local.envs.GH_URL"
   }
