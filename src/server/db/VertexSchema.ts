@@ -9,4 +9,4 @@ const VertexSchema = new Schema<Vertex>({
   data: Object
 });
 
-module.exports = VertexSchema;
+export default VertexSchema;
