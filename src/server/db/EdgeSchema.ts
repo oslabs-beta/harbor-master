@@ -4,7 +4,7 @@ import VertexSchema from './VertexSchema';
 const Schema = mongoose.Schema;
 
 const EdgeSchema = new Schema({
-  vertices: [VertexSchema]
+  endpointVertexIds: { type: [String], required: true }
 });
 
 export default EdgeSchema;
