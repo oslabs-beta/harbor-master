@@ -55,9 +55,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENV DISPLAY=:99
 ENV PORT=3000
 
-# Switch to the non-root user
-USER appuser
-
 # Expose the application port
 EXPOSE 3000
 
