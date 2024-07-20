@@ -135,10 +135,4 @@ dist
 #terraform
 .terraform.*
 /.terraform
-creds.json
-ghtoken
-/copy
 terraform.*
-
-#customer info
-/customer
