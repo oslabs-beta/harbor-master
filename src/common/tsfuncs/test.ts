@@ -9,7 +9,8 @@ var fs = require('fs');
 
 const outputFilePath = path.join(__dirname,'../../../customer', 'output.log');
 const exitFilePath = path.join(__dirname,'../../../customer', 'output.log.exit');
-
+fs.writeFile(outputFilePath,'',()=>{});
+fs.writeFile(exitFilePath,'',()=>{})
 function executeInXterm(command: string, callback: (error: Error | null, output: string) => void): void {
   const fullCommand = `xterm -e "cd customer && ${command} > ${outputFilePath} 2>&1; echo $? > ${exitFilePath}"`;
 

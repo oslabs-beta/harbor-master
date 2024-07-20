@@ -133,6 +133,4 @@ out
 #terraform
 .terraform.*
 /.terraform
-creds.json
-ghtoken
 terraform.*
