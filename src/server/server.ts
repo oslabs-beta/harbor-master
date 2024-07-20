@@ -4,17 +4,30 @@ require('dotenv').config();
 
 const fetch = require('node-fetch');
 const app = express();
+const getMetrics = (rawData: any, dataType: string) => {
+  const cpuUsagePoints: any[] = [];
+  rawData['timeSeries'].forEach((series: { [x: string]: { value: { int64Value: any; doubleValue: any; }; }[]; }) => {
+    series['points'].forEach(point => {
+      switch(dataType){
+        case 'int64Value':{
+          cpuUsagePoints.push(point.value.int64Value);
+          break;
+        }
+        case 'doubleValue':{
+          cpuUsagePoints.push(point.value.doubleValue);
+          break;
+        }
+      }
+    });
+  });
+  return cpuUsagePoints;
+};
+
 const startTime = '2024-07-16T00:00:00Z';
 const endTime = '2024-07-16T00:01:00Z';
-const token = `ya29.c.c0ASRK0GbYD37f_-BznGTgFZUBbo_7-Vty4nsHOJzG6nDv-WE7_FOZz50Eb7uoyqv0ssqE-Nk4VGCsqu-QmoR3GCdoOiWZVMvM1HxDjQ5Y5uecWm6jETB2MmnD-jI8i5CD8M3XV_s0QOaiX4PKcl-M5pIYunnybazJYrvClxCxyf84w3CZTPCQ6cpoSCtKkhlNG7SZAKxA_dsTV0Dr81jo4ZIJW1vgowlSCqePasb-ovDuesI8YILzUUlDzmEJWz3QdQFlr73p2vEgQatx4jgHS2co4HkxiOCKSzdjpFlZaAqbF0iZYw9-74VBeLm6RHeP35aA5KqZ2E4VcLjoxWa0fHWYd1YDFv7h9XboxvuYUF47PKBLc043rTk78QG387Ci6RclWurnOBzciJMymqFhMnbBi4qc49aas-8I9ZjoZ7I07n3lZvWUrhbXp1zmogQa4esun67V0xXUQFgguView5fxn2xw4xhqd7ytIfSBxofR2gQ-UUubrlVs5B4_9eep8ym8u3iFbaBVisgB1fe3Or9iyXri3FjrcBoedctojd9Z78VSVRW2MdullW1JUJw-Qr0567_1QIzWWb23wj7we5fczadzym39fRozjqY9OO0y_JM3IZqzkkjyplpQxl_w4-yOW2ta8fUO_4vO9znSI6n1QzVqVXxgtWnmOaWFy14qgj3ztuSlXQnZ01s0iM5cSq0WJRIlWR1_4JFS94UY1y-3OrUVrakxIpn1dMtv9QZFrZnJ5eia8Ve-teu9645xx42W5XSISgegOttQ87biveZw3ZQzVbfaZmWM6FdsJBl0cxvgdqsXUOUuYS102VkR3dx0q_y676ty6ZYXoS5UXXVcIVfqrUdbUm9p440r3x9ge09lm_9dcji_I7pUxfzkz7oiXQc64wcsxw7bUi67sWz-Uk7er6y4xVZ70aJ260lUye_pXm0oM9Sv-SV1JOty5SjlOiRkpwxp-5OXdzc5nhVlk1hiurM7k5Q38gFsYnddc2jf1V3pY_c`;
+const token = `ya29.c.c0ASRK0GYnkhvkpvLcgtkiwxOgv-NM7_tkWkukWmVFZSZRE4ERYiMFu3jPNVMNZVbHKBkG454l-2gRP34Is4T_G33VlVHQ-8dwLNW0IJXYblVtS2C3RCo5CwuEUBFiRFfeYM5IBXyD-gmgXnH44uQm5ZFZUffHUjCb8IUZ3WAl8ntTFCpQb0sY_h9LdR0nPQgL1o08PgNpKoWy9q6z4PivJQfdmPQiiKWHxOi3PiOrHaJFYdBeztIBCesQ7C8RTLehSElBYdxyTNEgMqj7mNiszYX-fpDWjeyjvRKRKyzjAHlHDkQmBaCQZa0Gmx6FVWz_iuo8LdRn2NzQ-QwcujMcPlm9CeEcPlFJATMV7EHEC8cObGJM4_kPLaQL384Ag8v4vxud7U6ZIS7siebgw53Buzb0x_g2swrSmnfWI0uf1f3-Vnee7x6ZcqVS6_nsmQF_wV8i3a4QFR4cqcptVttOxSZUi5woX3BUMpSY09XnvBvl5ijXm7QX7htbzdmezsW5JJu2OWI4vllQ5rseYFZpbIrhpzavoZ5kYkI162tRtRr_ryJpuqVadIneXBiex4yIJby-OhQ_oJiajj1Mk6FmFcSYXxsOikc-R22s8_lF4Q9R0is3ptFnlrly6coS85zM8bRkWsRhXulF1dQrf7pjuukUv5xUwB26ipQM77c3_SQf79Bngm43Rx8gnZ3QhxntogIROUwFoQRiywWZZ0vbds-5fVy3wekV4XctQq12MseJk54bc4oUkjveWgnvs3sXXMXrtRrw7XUnkUdswMOljs806U2sWznzg1a3qnU0Yb33y1_oUVRintpJ2oy0SbBXZpn05V6hk699VxqcyfBc8ygg-36XWkxlm5mYuWi-mSn5os63czURyUyYsxvc6V9grfmn2UajQOe11kWS_sWuZ4gpJnyjyceWuZ8oXzUngv9UhFn8nar8QiB7u5lRO3Ojdn9Mu4SIrrpOZlltgpzIlUQvS2mhkw88pq6Of3nXMdaepkZuplq2dtm`;
 const url = `https://monitoring.googleapis.com/v3/projects/k8-test-428619/timeSeries?filter=metric.type%3D%22compute.googleapis.com%2Finstance%2Fcpu%2Fusage_time%22&interval.startTime=${startTime}&interval.endTime=${endTime}`;
 const headers = {Authorization : `Bearer ${token}`};
-
-// fetch(url, {
-//   headers: headers
-// })
-//    .then((resp: { json: () => any; }) => resp.json())
-//    .then((json: any) => console.log(JSON.stringify(json, null, 4)))
 
 app.use(express.static(path.join(__dirname, '../../public')));
 
@@ -32,9 +45,10 @@ app.get('/cpuUsagePercentage/:startTime/:endTime', (req: Request, res: Response)
     headers: headers
   })
      .then((resp: { json: () => any; }) => resp.json())
-     .then((json: any) => res.json(JSON.stringify(json, null, 4)))
+     .then((json: any) => {
 
-  //res.json({ 'cpuUsage': 'cpuUsageData' });
+      res.json(getMetrics(json, 'doubleValue'));
+    })
 });
 
 app.get('/memoryUsage/:startTime/:endTime', (req: Request, res: Response) => {
@@ -43,9 +57,32 @@ app.get('/memoryUsage/:startTime/:endTime', (req: Request, res: Response) => {
     headers: headers
   })
      .then((resp: { json: () => any; }) => resp.json())
-     .then((json: any) => res.json(JSON.stringify(json, null, 4)))
+     .then((json: any) => {
+      res.json(getMetrics(json, 'int64Value'));
+    })
+});
 
-  //res.json({ 'cpuUsage': 'cpuUsageData' });
+app.get('/totalMemory/:startTime/:endTime', (req: Request, res: Response) => {
+  const cpuMetricRequest = `https://monitoring.googleapis.com/v3/projects/k8-test-428619/timeSeries?filter=metric.type="compute.googleapis.com/instance/memory/balloon/ram_size"&interval.startTime=${req.params.startTime}&interval.endTime=${req.params.endTime}`
+  fetch(cpuMetricRequest, {
+    headers: headers
+  })
+     .then((resp: { json: () => any; }) => resp.json())
+     .then((json: any) => {
+      res.json(getMetrics(json, 'int64Value'));
+     })
+});
+
+app.get('/cores/:startTime/:endTime', (req: Request, res: Response) => {
+  const cpuMetricRequest = `https://monitoring.googleapis.com/v3/projects/k8-test-428619/timeSeries?filter=metric.type="compute.googleapis.com/instance/cpu/reserved_cores"&interval.startTime=${req.params.startTime}&interval.endTime=${req.params.endTime}`
+  fetch(cpuMetricRequest, {
+    headers: headers
+  })
+     .then((resp: { json: () => any; }) => resp.json())
+     .then((json: any) => {
+      console.log(JSON.stringify(json, null, 4));
+      res.json(getMetrics(json, 'doubleValue'));
+     })
 });
 
 app.get('/api/', (req: Request, res: Response) => {
