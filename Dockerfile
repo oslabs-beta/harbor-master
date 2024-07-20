@@ -25,7 +25,9 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g typescript
 
 # Create a non-root user and group
-RUN groupadd -r appgroup && useradd -m -r -g appgroup appuser
+RUN useradd appuser
+
+RUN usermod -aG docker appuser
 
 # Set the working directory
 WORKDIR /app
@@ -43,7 +45,7 @@ COPY . .
 RUN npm run build
 
 # Set permissions for the application directory
-RUN chown -R appuser:appgroup /app
+RUN chown -R appuser:docker /app
 
 # Copy the entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
