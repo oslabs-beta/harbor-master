@@ -138,7 +138,6 @@ dist
 creds.json
 ghtoken
 /copy
-entrypoint.sh
 terraform.*
 
 #customer info
