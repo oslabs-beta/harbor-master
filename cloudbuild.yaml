@@ -1,7 +1,7 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 
-service_account: "projects/hmlivetest/serviceAccounts/terraform@hmlivetest.iam.gserviceaccount.com"
+service_account: "projects/terraform-solo-test/serviceAccounts/terraform@terraform-solo-test.iam.gserviceaccount.com"
 
 steps:
   - name: 'gcr.io/cloud-builders/docker'
@@ -9,21 +9,21 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us.gcr.io/hmlivetest/terraform/solo:latest'
+      - 'us.gcr.io/terraform-solo-test/terraform/solo:latest'
       - '.'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: 'docker-push'
     args:
       - 'push'
-      - 'us.gcr.io/hmlivetest/terraform/solo:latest'
+      - 'us.gcr.io/terraform-solo-test/terraform/solo:latest'
 
   - name: 'gcr.io/cloud-builders/gke-deploy'
     id: 'prepare-deploy'
     args:
       - 'prepare'
       - '--filename=./k8s/deploy.yml'
-      - '--image=us.gcr.io/hmlivetest/terraform/solo:latest'
+      - '--image=us.gcr.io/terraform-solo-test/terraform/solo:latest'
 
   - name: 'gcr.io/cloud-builders/gke-deploy'
     id: 'apply-deploy'

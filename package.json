@@ -6,8 +6,8 @@
   "scripts": {
     "build:dev": "tsc --watch --preserveWatchOutput",
     "start:dev": "nodemon dist/server/server.js & webpack -w",
-    "build":"webpack --config ./webpack.config.js",
-    "start":"node dist/server/server.js"
+    "build": "tsc --build",
+    "start": "node dist/server/server.js"
   },
   "keywords": [],
   "author": "",

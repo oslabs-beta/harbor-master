@@ -20,18 +20,13 @@ app.get('/api/', (req: Request, res: Response) => {
 });
 
 app.post('/test/', makeT, (req: Request, res: Response, next: NextFunction) => {
-  console.log(res.locals.bool)
-  console.log(res.locals.message);
-  if (res.locals.bool) {
-    res.send('done'); // Send the output if successful
-  } else {
-    res.status(500).send(res.locals.message); // Send the error message with a 500 status code
-  }
+  if (res.locals.bool) res.send('done');
+  else res.sendStatus(500);
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).send({ error: err.message });
+  res.status(500).send({ error: err.message.replace(/\x1b\[[0-9;]*m/g, '')});
 });
 
 const PORT = 3000;

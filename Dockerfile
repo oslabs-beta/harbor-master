@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
 # Install gosu
 RUN apt-get update && apt-get install -y gosu
 
+# Create a non-root user
+RUN useradd -m appuser
+
 # Set the working directory
 WORKDIR /app
 
@@ -27,17 +30,18 @@ RUN npm install
 COPY . .
 
 # Build the application
-
 RUN npm run build
+
+RUN ^C
+
+# Set permissions for the application directory
+RUN chown -R appuser:appuser /app
 
 # Copy the entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Set permissions for the entrypoint script
 RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Create a non-root user
-RUN useradd -m appuser
 
 # Set environment variables
 ENV DISPLAY=:99

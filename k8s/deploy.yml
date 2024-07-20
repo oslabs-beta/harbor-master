@@ -139,7 +139,7 @@ spec:
       name: nodeapppod
     spec:
       containers:
-        - image: us.gcr.io/hmlivetest/terraform/solo:latest
+        - image: us.gcr.io/terraform-solo-test/terraform/solo:latest
           imagePullPolicy: Always
           name: nodeappcontainers
           ports:
