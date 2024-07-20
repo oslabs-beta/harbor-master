@@ -3,10 +3,9 @@ import User from 'interfaces/User';
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema<User>({
+const UserSchema = new Schema<User>({
   githubHandle: String,
   email: String,
-  googleIamSecretKey: String
 });
 
-module.exports = userSchema;
+export default UserSchema;
