@@ -25,9 +25,8 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g typescript
 
 # Create a non-root user and group
-RUN useradd appuser
-
-RUN usermod -aG docker appuser
+RUN groupadd -g 999 docker
+RUN useradd -m -d /home/appuser -s /bin/bash -u 1000 -g 999 appuser
 
 # Set the working directory
 WORKDIR /app
@@ -62,6 +61,9 @@ EXPOSE 3000
 
 # Use the startup script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Switch to the non-root user
+USER appuser
 
 # Start the application
 CMD ["npm", "run", "start"]
