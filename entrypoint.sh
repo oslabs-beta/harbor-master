@@ -20,4 +20,4 @@ xterm -display :99 2>/dev/null &
 sleep 2
 
 # Switch to non-root user and run the application
-exec gosu appuser "$@"
+exec "$@"
