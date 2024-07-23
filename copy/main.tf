@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "registry.terraform.io/hashicorp/google"
-      version = ">= 5.36.0"
+      version = "5.36.0"
     }
      kubectl = {
       source  = "gavinbunney/kubectl"

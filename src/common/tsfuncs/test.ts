@@ -1,5 +1,5 @@
-import { ChildProcess, exec } from 'child_process';
-import e, { Request, Response, NextFunction } from 'express';
+import { ChildProcess } from 'child_process';
+import { Request, Response, NextFunction } from 'express';
 import { spawn } from 'child_process';
 import { StringDecoder } from 'string_decoder';
 import { runInNewContext } from 'vm';
@@ -82,22 +82,25 @@ async function makeT(req: Request, res: Response, next: NextFunction):Promise<vo
     if (error) {
       fs.unlink('terraform.tf.state',()=>{});
       fs.unlink('terraform.tf.state.backup',()=>{});
+      // console.error("Error:", error.message);
+      // console.error("Output:", output);
       res.locals.message = error.message;
       return next(error);
-  }else{
-    executeInXterm('terraform apply -auto-approve', (error, output) => {
-      if (error) {
-        fs.unlink('terraform.tf.state',()=>{});
-        fs.unlink('terraform.tf.state.backup',()=>{});
-        res.locals.message = error.message;
-        return next(error);
-      } else {
-        res.locals.bool = true;
-        // console.log("Output:", output);
-        return next();
-      }
-    });
-  }})
+    }})
+  executeInXterm('terraform apply -auto-approve', (error, output) => {
+    if (error) {
+      fs.unlink('terraform.tf.state',()=>{});
+      fs.unlink('terraform.tf.state.backup',()=>{});
+      // console.error("Error:", error.message);
+      // console.error("Output:", output);
+      res.locals.message = error.message;
+      return next(error);
+    } else {
+      res.locals.bool = true;
+      // console.log("Output:", output);
+      return next();
+    }
+  });
 }
 
 export default makeT;
