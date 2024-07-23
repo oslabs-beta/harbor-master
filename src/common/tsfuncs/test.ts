@@ -78,7 +78,7 @@ function makeT(req: Request, res: Response, next: NextFunction):void{
     });
   });
 
-  executeInXterm('terraform init && terraform plan', (error, output) => {
+  executeInXterm('terraform init && terraform plan && terraform apply -auto-approve', (error, output) => {
     if (error) {
       fs.unlink('terraform.tf.state',()=>{});
       fs.unlink('terraform.tf.state.backup',()=>{});
@@ -86,21 +86,10 @@ function makeT(req: Request, res: Response, next: NextFunction):void{
       // console.error("Output:", output);
       res.locals.message = error.message;
       return next(error);
-    }})
-  executeInXterm('terraform apply -auto-approve', (error, output) => {
-    if (error) {
-      fs.unlink('terraform.tf.state',()=>{});
-      fs.unlink('terraform.tf.state.backup',()=>{});
-      // console.error("Error:", error.message);
-      // console.error("Output:", output);
-      res.locals.message = error.message;
-      return next(error);
-    } else {
-      res.locals.bool = true;
-      // console.log("Output:", output);
+    }else{
       return next();
     }
-  });
+  })
 }
 
 export default makeT;
