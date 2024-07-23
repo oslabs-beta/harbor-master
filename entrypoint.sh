@@ -11,8 +11,6 @@ Xvfb :99 -screen 0 1024x768x24 &
 # Wait a few seconds to ensure Xvfb is fully started
 sleep 2
 
-sudo chmod 666 /var/run/docker.sock
-
 # Start xterm in the background and suppress xkbcomp warnings
 xterm -display :99 2>/dev/null &
 
