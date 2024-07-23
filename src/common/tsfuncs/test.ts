@@ -1,5 +1,5 @@
 import { ChildProcess, exec } from 'child_process';
-import { Request, Response, NextFunction } from 'express';
+import e, { Request, Response, NextFunction } from 'express';
 import { spawn } from 'child_process';
 import { StringDecoder } from 'string_decoder';
 import { runInNewContext } from 'vm';
@@ -48,10 +48,10 @@ function executeInXterm(command: string, callback: (error: Error | null, output:
     });
   });
 }
-function makeT(req: Request, res: Response, next: NextFunction):void{
+async function makeT(req: Request, res: Response, next: NextFunction):Promise<void>{
   res.locals.bool = false;
 
-  fs.readFile('./copy/main.tf', 'utf8', async (err: Error | null, data: string) => {
+  fs.readFile('./copy/main.tf', 'utf8', (err: Error | null, data: string) => {
     if (err) {
       console.log(err);
       return next(err);
@@ -76,22 +76,19 @@ function makeT(req: Request, res: Response, next: NextFunction):void{
         return next(err);
       }
     });
+  });
 
-    await executeInXterm('terraform init && terraform plan', (error, output) => {
-      if (error) {
-        fs.unlink('terraform.tf.state',()=>{});
-        fs.unlink('terraform.tf.state.backup',()=>{});
-        // console.error("Error:", error.message);
-        // console.error("Output:", output);
-        res.locals.message = error.message;
-        return next(error);
-    }});
+  executeInXterm('terraform init && terraform plan', (error, output) => {
+    if (error) {
+      fs.unlink('terraform.tf.state',()=>{});
+      fs.unlink('terraform.tf.state.backup',()=>{});
+      res.locals.message = error.message;
+      return next(error);
+  }else{
     executeInXterm('terraform apply -auto-approve', (error, output) => {
       if (error) {
         fs.unlink('terraform.tf.state',()=>{});
         fs.unlink('terraform.tf.state.backup',()=>{});
-        // console.error("Error:", error.message);
-        // console.error("Output:", output);
         res.locals.message = error.message;
         return next(error);
       } else {
@@ -100,8 +97,7 @@ function makeT(req: Request, res: Response, next: NextFunction):void{
         return next();
       }
     });
-
-  });
+  }})
 }
 
 export default makeT;
