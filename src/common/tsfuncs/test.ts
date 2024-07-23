@@ -27,7 +27,6 @@ function executeInXterm(command: string, callback: (error: Error | null, output:
     // Read the exit code from the file
     fs.readFile(exitFilePath, 'utf8', (err: Error | null, exitCode: string | Buffer) => {
       if (err) {
-
         callback(err, '');
         return;
       }
@@ -80,23 +79,25 @@ function makeT(req: Request, res: Response, next: NextFunction) {
 
     executeInXterm('terraform init && terraform plan', (error, output) => {
       if (error) {
+        fs.unlink('terraform.tf.state',()=>{});
+        fs.unlink('terraform.tf.state.backup',()=>{});
+        // console.error("Error:", error.message);
+        // console.error("Output:", output);
+        res.locals.message = error.message;
+        return next(error);
+    }});
+    executeInXterm('terraform apply -auto-approve', (error, output) => {
+      if (error) {
+        fs.unlink('terraform.tf.state',()=>{});
+        fs.unlink('terraform.tf.state.backup',()=>{});
         // console.error("Error:", error.message);
         // console.error("Output:", output);
         res.locals.message = error.message;
         return next(error);
       } else {
-        executeInXterm('terraform apply -auto-approve', (error, output) => {
-          if (error) {
-            // console.error("Error:", error.message);
-            // console.error("Output:", output);
-            res.locals.message = error.message;
-            return next(error);
-          } else {
-            res.locals.bool = true;
-            // console.log("Output:", output);
-            return next();
-          }
-        });
+        res.locals.bool = true;
+        // console.log("Output:", output);
+        return next();
       }
     });
 
