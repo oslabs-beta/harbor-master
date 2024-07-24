@@ -66,7 +66,6 @@ function chainCommands(commands: string[], callback: (error: Error | null, outpu
 }
 
 function makeT(req: Request, res: Response, next: NextFunction): void {
-  res.locals.bool = false;
   fs.writeFile(outputFilePath, '', (err: Error) => {if(err) console.log(err)});
   fs.writeFile(exitFilePath, '', (err:Error) => {if(err) console.log(err)});
   fs.readFile('./copy/main.tf', 'utf8', (err: Error | null, data: string) => {

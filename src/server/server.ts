@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import makeT from '../common/tsfuncs/test';
 import { allowedNodeEnvironmentFlags } from 'process';
+import { error } from 'console';
 require('dotenv').config();
 const app = express();
 app.use(express.json());
@@ -19,9 +20,8 @@ app.get('/api/', (req: Request, res: Response) => {
   res.json({ AppName: 'Master-Harbor' });
 });
 
-app.post('/test/', makeT, (req: Request, res: Response, next: NextFunction) => {
-  if (res.locals.bool) res.send('done');
-  else res.sendStatus(500);
+app.post('/test/', makeT, (req: Request, res: Response) => {
+  res.status(200).send('Done');
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
