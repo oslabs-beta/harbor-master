@@ -2,15 +2,13 @@ import { ChildProcess } from 'child_process';
 import { Request, Response, NextFunction } from 'express';
 import { spawn } from 'child_process';
 import { StringDecoder } from 'string_decoder';
-import { runInNewContext } from 'vm';
 import path from 'path';
 const decoder = new StringDecoder('utf8');
 var fs = require('fs');
 
 const outputFilePath = path.join(__dirname,'../../../customer', 'output.log');
 const exitFilePath = path.join(__dirname,'../../../customer', 'output.log.exit');
-fs.writeFile(outputFilePath,'',()=>{});
-fs.writeFile(exitFilePath,'',()=>{})
+
 function executeInXterm(command: string, callback: (error: Error | null, output: string) => void): void {
   const fullCommand = `xterm -e "cd customer && ${command} > ${outputFilePath} 2>&1; echo $? > ${exitFilePath}"`;
 
@@ -39,7 +37,7 @@ function executeInXterm(command: string, callback: (error: Error | null, output:
           return;
         }
 
-        if(!output.toString().includes('Error:')) {
+        if (!output.toString().includes('Error:')) {
           callback(null, output.toString());
         } else {
           callback(new Error(`Command failed \n${output.toString().slice(output.toString().indexOf('Error:'))}`), output.toString().slice(output.toString().indexOf('Error:')));
@@ -48,9 +46,29 @@ function executeInXterm(command: string, callback: (error: Error | null, output:
     });
   });
 }
-function makeT(req: Request, res: Response, next: NextFunction):void{
-  res.locals.bool = false;
 
+function chainCommands(commands: string[], callback: (error: Error | null, output: string) => void): void {
+  if (commands.length === 0) {
+    callback(null, '');
+    return;
+  }
+
+  const command = commands.shift();
+  if (command) {
+    executeInXterm(command, (error, output) => {
+      if (error) {
+        callback(error, output);
+      } else {
+        chainCommands(commands, callback);
+      }
+    });
+  }
+}
+
+function makeT(req: Request, res: Response, next: NextFunction): void {
+  res.locals.bool = false;
+  fs.writeFile(outputFilePath, '', (err: Error) => {if(err) console.log(err)});
+  fs.writeFile(exitFilePath, '', (err:Error) => {if(err) console.log(err)});
   fs.readFile('./copy/main.tf', 'utf8', (err: Error | null, data: string) => {
     if (err) {
       console.log(err);
@@ -59,7 +77,7 @@ function makeT(req: Request, res: Response, next: NextFunction):void{
 
     let creds: string = req.body.saCred;
     if (typeof req.body.saCred === 'object') creds = JSON.stringify(req.body.saCred);
-    
+
     let result = data.replace(/local.envs.APP_INSTALLATION_ID/g, req.body.appId)
       .replace(/local.envs.PROJECT_ID/g, req.body.projId)
       .replace(/local.envs.PROJECT_NUMBER/g, req.body.projNum)
@@ -78,18 +96,29 @@ function makeT(req: Request, res: Response, next: NextFunction):void{
     });
   });
 
-  executeInXterm('terraform init && terraform plan && terraform apply -auto-approve', (error, output) => {
+  const commands = [
+    'terraform init && terraform plan',
+    'terraform apply -auto-approve'
+  ];
+
+  chainCommands(commands, async (error, output) => {
     if (error) {
-      fs.unlink('terraform.tf.state',()=>{});
-      fs.unlink('terraform.tf.state.backup',()=>{});
-      // console.error("Error:", error.message);
-      // console.error("Output:", output);
+      console.log('REACHED');
+      console.error("Error:", error.message);
+      console.error("Output:", output);
       res.locals.message = error.message;
       return next(error);
-    }else{
+    } else {
+      await fs.unlink('./customer/terraform.tf.state', () => {});
+      await fs.unlink('./customer/terraform.tf.state.backup', () => {});
+      await fs.unlink('./customer/cloudbuild.yaml', () => {});
+      await fs.unlink('./customer/k8s/deploy.yml', () => {});
+      await fs.unlink('./customer/.terraform/lock.hcl', () => {});
+      await fs.unlink('./customer/output.log', () => {});
+      await fs.unlink('./customer/output.log.exit', () => {});
       return next();
     }
-  })
+  });
 }
 
 export default makeT;
