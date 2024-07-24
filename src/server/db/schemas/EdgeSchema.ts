@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-const VertexSchema = require('./VertexSchema');
 
 const EdgeSchema = new Schema({
-  vertices: [VertexSchema]
+  endpointVertexIds: { type: [String], required: true }
 });
 
 module.exports = EdgeSchema;
