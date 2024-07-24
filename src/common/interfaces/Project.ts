@@ -12,6 +12,7 @@ export default interface Project {
   gcpRegion: string
   gcpComputeZone: string
   gcpServiceAccounts: ServiceAccountCredentials[]
+  terraformState: object
   githubToken: string
   githubUrl: string
   createdAt: string
