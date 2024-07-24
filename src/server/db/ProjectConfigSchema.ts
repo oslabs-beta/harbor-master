@@ -1,9 +1,8 @@
-import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 import Project from 'interfaces/Project';
-import VertexSchema from './VertexSchema';
-import EdgeSchema from './EdgeSchema';
-
-const Schema = mongoose.Schema;
+import Vertex from 'interfaces/Vertex';
+import Edge from 'interfaces/Edge';
+import ServiceAccountCredentials from 'interfaces/ServiceAccountCredentials';
 
 const ProjectConfigSchema = new Schema<Project>({
   userId: String,
@@ -13,12 +12,12 @@ const ProjectConfigSchema = new Schema<Project>({
   gcpServiceAcctEmail: String,
   gcpRegion: String,
   gcpComputeZone: String,
-  gcpServiceAccounts: [Object],
+  gcpServiceAccounts: Array<ServiceAccountCredentials>,
   githubToken: String,
   githubUrl: String,
   createdAt: String,
-  vertices: [VertexSchema],
-  edges: [EdgeSchema]
+  vertices: Array<Vertex>,
+  edges: Array<Edge>
 });
 
 export default ProjectConfigSchema;
