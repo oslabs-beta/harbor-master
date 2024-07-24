@@ -37,8 +37,7 @@ app.post('/create-project', uploadFileMiddleware, createProject, (req, res) => {
 });
 app.get('/get-project/:id', getProjectById, (req, res) => {
   res.json(res.locals.project)
-})
-
+});
 // auth controller
 app.get('/login', githubLogin);
 app.get('/auth-callback', callback);
