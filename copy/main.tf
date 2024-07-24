@@ -59,7 +59,7 @@ resource "local_file" "deploy" {
         spec:
           containers:
             - name: nodeappcontainer
-              image: us.gcr.io/"local.envs.PROJECT_ID"/terraform/solo:latest
+              image: us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest
               imagePullPolicy: Always
               ports:
                 - containerPort: 80
