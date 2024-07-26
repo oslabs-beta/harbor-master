@@ -1,3 +1,5 @@
+import GcsPod from './Pod';
+
 export default interface GcsNode {
   name: string;
   cpuCapacity: string;
@@ -8,4 +10,5 @@ export default interface GcsNode {
   memoryAllocated: string;
   zone: string;
   region: string;
+  pods: GcsPod[];
 }

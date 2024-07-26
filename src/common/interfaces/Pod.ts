@@ -3,4 +3,5 @@ export default interface GcsPod {
   status: string;
   cluster: string;
   parent: string;
+  nodeName: string;
 }

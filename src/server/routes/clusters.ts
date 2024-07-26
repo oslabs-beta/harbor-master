@@ -19,6 +19,14 @@ router.get(
   }
 );
 
+router.get(
+  '/details',
+  ClusterController.getClusterMapping,
+  (req: Request, res: Response): void => {
+    res.json({ RouteName: 'pod-list-Route' });
+  }
+);
+
 router.get('/', (req: Request, res: Response): void => {
   res.json({ RouteName: 'Nodes-Route' });
 });
