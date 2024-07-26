@@ -15,6 +15,7 @@ const endpointIP = '34.71.141.14';
 
 const token = '';
 class ClusterController {
+  //TODO THIS MIDDLEWARE NO LONGER NEEDED
   public async getNodeList(
     req: Request,
     res: Response,
@@ -71,7 +72,7 @@ class ClusterController {
       next(error);
     }
   }
-
+  //TODO THIS MIDDLEWARE NO LONGER NEEDED
   public async getPodList(
     req: Request,
     res: Response,
@@ -133,6 +134,7 @@ class ClusterController {
     const podsUrl = `https://${endpointIP}/api/v1/pods`;
 
     try {
+      //TODO USE GET TOKEN FUNCTION HELPER
       // Fetch the access token
       // const accessToken = await this.getToken(keyFilename);
       const auth = new GoogleAuth({
@@ -160,9 +162,8 @@ class ClusterController {
         },
         agent,
       };
-      // Log the access token (for debugging)
-      console.log('Access Token:', accessToken);
 
+      //TODO REPLACE WITH OPTIONS
       //Parallel api requests
       const [nodeApiResponse, podApiResponse] = await Promise.all([
         fetch(nodesUrl, {
@@ -197,7 +198,7 @@ class ClusterController {
 
       // Parse the response as JSON
       const nodeData = await nodeApiResponse.json();
-      console.log('Node Data received:', nodeData.items);
+      // console.log('Node Data received:', nodeData.items);
 
       const podData = await podApiResponse.json();
       // console.log('Pod Data received:', podData.items);
@@ -240,27 +241,6 @@ class ClusterController {
           }
         });
       res.json(nodeMap);
-      // const nodes: GcsNode[] = nodeData.items.map((item: any) => ({
-      //   name: item.metadata.name,
-      //   // zone: item.metadata.labels.topology['gke.io/zone'],
-      //   // region: item.metadata.labels.topology['kubernetes.io/region'],
-      //   cpuCapacity: item.status.capacity.cpu,
-      //   storageCapacity: item.status.capacity['ephemeral-storage'],
-      //   memoryCapacity: item.status.capacity.memory,
-      //   cpuAllocated: item.status.allocatable.cpu,
-      //   storageAllocated: item.status.allocatable['ephemeral-storage'],
-      //   memoryAllocated: item.status.allocatable.memory,
-      // }));
-
-      // const pods: GcsPod[] = podData.items
-      //   .filter((pod: any) => pod.metadata.labels.app)
-      //   .map((item: any) => ({
-      //     name: item.metadata.name,
-      //     parent: item.metadata.labels.app,
-      //     cluster: item.spec.containers.name,
-      //     nodeName: item.spec.nodeName,
-      //     status: item.status.phase,
-      //   }));
     } catch (error) {
       //TODO add error handeling
       next(error);
