@@ -134,3 +134,4 @@ out
 .terraform.*
 /.terraform
 terraform.*
+main.tf
