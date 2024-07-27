@@ -12,7 +12,7 @@ const metrics_controller : { getMemoryUsage : any, getCpuUsagePercentage: any, g
         })
            .then((resp: { json: () => any; }) => resp.json())
            .then((json: any) => {
-            res.json(getMetrics(json, 'int64Value'));
+            res.json(getMetrics(json, 'int64Value', 'Memory Usage'));
           })
         next();
 
@@ -25,8 +25,8 @@ const metrics_controller : { getMemoryUsage : any, getCpuUsagePercentage: any, g
         })
             .then((resp: { json: () => any; }) => resp.json())
             .then((json: any) => {
-
-            res.json(getMetrics(json, 'doubleValue'));
+            //console.log('data: ', JSON.stringify(json, null, 4));
+            res.json(getMetrics(json, 'doubleValue', 'CPU Usage'));
             })
         next();
 
