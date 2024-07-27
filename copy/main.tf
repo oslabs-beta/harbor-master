@@ -28,6 +28,19 @@ locals {
     "artifactregistry.googleapis.com",
   ]
 }
+
+variable "cName"{type = string}
+variable "arName"{
+  type = string 
+  description = "must be in format [name]/[difName] ex. [harborMaster/main]"
+}
+
+variable "npName"{type = string}
+variable "nodeCount"{type = string}
+variable "cbConName"{type = string}
+variable "cbRepName"{type = string}
+variable "cbTrgName"{type = string}
+
 resource "local_file" "deploy" {
   content  = <<-EOF
     apiVersion: apps/v1
