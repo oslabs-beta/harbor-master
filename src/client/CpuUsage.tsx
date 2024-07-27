@@ -9,13 +9,10 @@ export function CpuUsage() {
       fetch("/metrics/cpuUsagePercentage/2024-07-16T00:00:00Z/2024-07-16T00:10:00Z")
         .then(res => res.json())
         .then(data => {
-        console.log('data from backend: ', data);
-
-        //setData([['Cpu Usage', 'Percentage'],[1,data[0]*100],[2,data[1]*100],[3,data[2]*100]])
         setData(data);
         
     })
-    .catch(e => console.log('error retreiving data from back end server'));
+    .catch(e => console.log('error retreiving cpu data from back end server'));
     },[]);
 
       const options = {

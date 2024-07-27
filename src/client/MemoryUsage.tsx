@@ -10,7 +10,6 @@ export function MemoryUsage() {
       fetch("/metrics/memoryUsage/2024-07-16T00:00:00Z/2024-07-16T00:10:00Z")
         .then(res => res.json())
         .then(data => {
-        console.log('memory data from backend: ', data);
         setData(data);
         
     })
