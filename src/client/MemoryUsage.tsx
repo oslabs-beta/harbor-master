@@ -2,12 +2,12 @@ import React from "react";
 import { Chart } from "react-google-charts";
 import { useState, useEffect } from "react";
 
-export function MemoryUsage() {
+export function MemoryUsage(props: any) {
 
     const [data, setData] = useState([[]]);
 
     useEffect(() => {
-      fetch("/metrics/memoryUsage/2024-07-16T00:00:00Z/2024-07-16T00:10:00Z")
+      fetch('/metrics/memoryUsage/'+ props.from + '/' + props.to)
         .then(res => res.json())
         .then(data => {
         setData(data);

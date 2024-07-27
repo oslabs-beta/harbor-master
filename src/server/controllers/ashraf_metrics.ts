@@ -39,7 +39,7 @@ const metrics_controller : { getMemoryUsage : any, getCpuUsagePercentage: any, g
         })
             .then((resp: { json: () => any; }) => resp.json())
             .then((json: any) => {
-            res.json(getMetrics(json, 'int64Value'));
+            res.json(getMetrics(json, 'int64Value','Total Memory Per Instance'));
             })
         next();
     },
@@ -51,8 +51,8 @@ const metrics_controller : { getMemoryUsage : any, getCpuUsagePercentage: any, g
         })
             .then((resp: { json: () => any; }) => resp.json())
             .then((json: any) => {
-            console.log(JSON.stringify(json, null, 4));
-            res.json(getMetrics(json, 'doubleValue'));
+            //console.log(JSON.stringify(json, null, 4));
+            res.json(getMetrics(json, 'doubleValue', 'Cores Per Instance'));
             })
         next();
     },
