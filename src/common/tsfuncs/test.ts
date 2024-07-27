@@ -10,7 +10,7 @@ const outputFilePath = path.join(__dirname,'../../../customer', 'output.log');
 const exitFilePath = path.join(__dirname,'../../../customer', 'output.log.exit');
 
 function executeInXterm(command: string, callback: (error: Error | null, output: string) => void): void {
-  const fullCommand = `xterm -e "cd customer && ${command} > ${outputFilePath} 2>&1; echo $? > ${exitFilePath}"`;
+  const fullCommand = `xterm  -e "cd customer && ${command} > ${outputFilePath} 2>&1; echo $? > ${exitFilePath}"`;
 
   console.log(`Executing command: ${fullCommand}`);
 
@@ -47,24 +47,6 @@ function executeInXterm(command: string, callback: (error: Error | null, output:
   });
 }
 
-function chainCommands(commands: string[], callback: (error: Error | null, output: string) => void): void {
-  if (commands.length === 0) {
-    callback(null, '');
-    return;
-  }
-
-  const command = commands.shift();
-  if (command) {
-    executeInXterm(command, (error, output) => {
-      if (error) {
-        callback(error, output);
-      } else {
-        chainCommands(commands, callback);
-      }
-    });
-  }
-}
-
 function makeT(req: Request, res: Response, next: NextFunction): void {
   fs.writeFile(outputFilePath, '', (err: Error) => {if(err) console.log(err)});
   fs.writeFile(exitFilePath, '', (err:Error) => {if(err) console.log(err)});
@@ -78,14 +60,24 @@ function makeT(req: Request, res: Response, next: NextFunction): void {
     if (typeof req.body.saCred === 'object') creds = JSON.stringify(req.body.saCred);
 
     let result = data.replace(/local.envs.APP_INSTALLATION_ID/g, req.body.appId)
-      .replace(/local.envs.PROJECT_ID/g, req.body.projId)
-      .replace(/local.envs.PROJECT_NUMBER/g, req.body.projNum)
-      .replace(/local.envs.SA_EMAIL/g, req.body.saMail)
-      .replace(/local.envs.COMPUTE_REGION/g, req.body.compR)
-      .replace(/local.envs.COMPUTE_ZONE/g, req.body.compZ)
-      .replace(/local.envs.SA_credentials/g, creds)
-      .replace(/local.envs.GH_TOKEN/g, req.body.ghTok)
-      .replace(/local.envs.GH_URL/g, req.body.ghURL);
+      .replace(/PROJECT_ID/g, req.body.projId)
+      .replace(/PROJECT_NUMBER/g, req.body.projNum)
+      .replace(/SA_EMAIL/g, req.body.saMail)
+      .replace(/.COMPUTE_REGION/g, req.body.compR)
+      .replace(/COMPUTE_ZONE/g, req.body.compZ)
+      .replace(/SA_credentials/g, creds)
+      .replace(/GH_TOKEN/g, req.body.ghTok)
+      .replace(/GH_URL/g, req.body.ghURL)
+      .replace(/cName/g, req.body.cName)
+      .replace(/cName/g, req.body.cName)
+      .replace(/arName/g, req.body.arName)
+      .replace(/npName/g, req.body.npName)
+      .replace(/nodeCount/g, req.body.nodeCount)
+      .replace(/cbConName/g, req.body.cbConName)
+      .replace(/cbRepName/g, req.body.cbRepName)
+      .replace(/cbTrgName/g, req.body.cbTrgName);
+
+      
 
     fs.writeFile('./customer/main.tf', result, 'utf8', (err: Error | null) => {
       if (err) {
@@ -95,29 +87,15 @@ function makeT(req: Request, res: Response, next: NextFunction): void {
     });
   });
 
-  const commands = [
-    'terraform init && terraform plan',
-    'terraform apply -auto-approve'
-  ];
-
-  chainCommands(commands, async (error, output) => {
-    if (error) {
-      console.log('REACHED');
-      console.error("Error:", error.message);
-      console.error("Output:", output);
-      res.locals.message = error.message;
-      return next(error);
-    } else {
-      await fs.unlink('./customer/terraform.tf.state', () => {});
-      await fs.unlink('./customer/terraform.tf.state.backup', () => {});
-      await fs.unlink('./customer/cloudbuild.yaml', () => {});
-      await fs.unlink('./customer/k8s/deploy.yml', () => {});
-      await fs.unlink('./customer/.terraform/lock.hcl', () => {});
-      await fs.unlink('./customer/output.log', () => {});
-      await fs.unlink('./customer/output.log.exit', () => {});
-      return next();
-    }
-  });
+executeInXterm('terraform init && terraform plan && terraform apply -auto-approve', (error, output) => {
+  if (error) {
+    fs.unlink('terraform.tf.state',()=>{});
+    fs.unlink('terraform.tf.state.backup',()=>{});
+    res.locals.message = error.message;
+    return next(error.message);
+  }else{
+    return next();
+  }
+})
 }
-
 export default makeT;

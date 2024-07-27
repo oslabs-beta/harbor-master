@@ -9,6 +9,7 @@ import { handleError } from './controllers/errorController';
 import UploadService from './services/UploadService';
 import { ProjectModel } from './config/mongoConfig';
 const app = express();
+app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../../public')));
 const uploadService = new UploadService();
