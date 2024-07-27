@@ -5,16 +5,70 @@ import fetch, { RequestInit } from 'node-fetch';
 import { GoogleAuth } from 'google-auth-library';
 import GcsNode from 'interfaces/Node';
 import GcsPod from 'interfaces/Pod';
-import cluster from 'cluster';
+import cluster from 'interfaces/Cluster';
+import { getToken } from '../services/gkeService';
+import GcsCluster from 'interfaces/Cluster';
 
 // const keyFilename = '../keys/k8-test-428619-f078a86334f9.json';
 // const endpointIP = '34.71.141.14';
 
 const keyFilename = '../keys/harbor-master-430602-f4f5fa8200ff.json';
-const endpointIP = '35.223.235.243';
+const projectName = 'harbor-master-430602';
+const endpointIP = '34.173.62.141';
 
 const token = '';
 class ClusterController {
+  //TODO THIS MIDDLEWARE NO LONGER NEEDED
+  public async getClusterList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const url = `https://container.googleapis.com/v1/projects/${projectName}/locations/-/clusters`;
+    try {
+      // Fetch the access token
+      const accessToken = await getToken(keyFilename);
+      const agent = new https.Agent({
+        rejectUnauthorized: false, // This will ignore the certificate verification
+      });
+      // Log the access token (for debugging)
+      console.log('Access Token:', accessToken);
+
+      // Make the API request
+      const apiResponse = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        agent,
+      } as RequestInit);
+
+      // Check if the response is ok (status code 200-299)
+      if (!apiResponse.ok) {
+        throw new Error(
+          `Network response was not ok: ${apiResponse.statusText}`
+        );
+      }
+
+      // Parse the response as JSON
+      const data = await apiResponse.json();
+      console.log('Data received:', data);
+
+      const clusters: GcsCluster[] = data.clusters.map((cluster: any) => ({
+        name: cluster.name,
+        zone: cluster.zone,
+        endpoint: cluster.endpoint,
+        location: cluster.location,
+        nodeCount: cluster.currentNodeCount,
+      }));
+      res.json(clusters);
+    } catch (error) {
+      // Pass errors to the error handling middleware
+      next(error);
+    }
+  }
+
   //TODO THIS MIDDLEWARE NO LONGER NEEDED
   public async getNodeList(
     req: Request,
@@ -25,7 +79,7 @@ class ClusterController {
     try {
       // Fetch the access token
       // const accessToken = await this.getToken(keyFilename);
-      const accessToken = token;
+      const accessToken = await getToken(keyFilename);
       const agent = new https.Agent({
         rejectUnauthorized: false, // This will ignore the certificate verification
       });
@@ -82,7 +136,7 @@ class ClusterController {
     try {
       // Fetch the access token
       // const accessToken = await this.getToken(keyFilename);
-      const accessToken = token;
+      const accessToken = await getToken(keyFilename);
       const agent = new https.Agent({
         rejectUnauthorized: false, // This will ignore the certificate verification
       });
@@ -134,17 +188,8 @@ class ClusterController {
     const podsUrl = `https://${endpointIP}/api/v1/pods`;
 
     try {
-      //TODO USE GET TOKEN FUNCTION HELPER
       // Fetch the access token
-      // const accessToken = await this.getToken(keyFilename);
-      const auth = new GoogleAuth({
-        keyFile: keyFilename,
-        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-      });
-
-      const client = await auth.getClient();
-      const tokenResponse = await client.getAccessToken();
-      const accessToken = tokenResponse.token;
+      const accessToken = await getToken(keyFilename);
 
       if (!accessToken) {
         throw new Error('Failed to obtain access token');
