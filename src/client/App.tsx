@@ -18,7 +18,14 @@ const App: React.FC = () => {
           "compZ":(document.getElementById("compZ") as HTMLInputElement).value,
           "saCred":(document.getElementById("saCred") as HTMLInputElement).value,
           "ghTok":(document.getElementById("ghTok") as HTMLInputElement).value,
-          "ghURL":(document.getElementById("ghURL") as HTMLInputElement).value
+          "ghURL":(document.getElementById("ghURL") as HTMLInputElement).value,
+          "cName":(document.getElementById("cName") as HTMLInputElement).value,
+          "arName":(document.getElementById("arName") as HTMLInputElement).value,
+          "npName":(document.getElementById("npName") as HTMLInputElement).value,
+          "nodeCount":(document.getElementById("nodeCount") as HTMLInputElement).value,
+          "cbConName":(document.getElementById("cbConName") as HTMLInputElement).value,
+          "cbRepName":(document.getElementById("cbRepName") as HTMLInputElement).value,
+          "cbTrgName":(document.getElementById("cbTrgName") as HTMLInputElement).value
         })
     });
     (document.getElementById("appId") as HTMLInputElement).value = '';
@@ -30,6 +37,13 @@ const App: React.FC = () => {
     (document.getElementById("saCred") as HTMLInputElement).value = '';
     (document.getElementById("ghTok") as HTMLInputElement).value = '';
     (document.getElementById("ghURL") as HTMLInputElement).value = '';
+    (document.getElementById("cName") as HTMLInputElement).value = '';
+    (document.getElementById("arName") as HTMLInputElement).value = '';
+    (document.getElementById("npName") as HTMLInputElement).value = '';
+    (document.getElementById("nodeCount") as HTMLInputElement).value = '';
+    (document.getElementById("cbConName") as HTMLInputElement).value = '';
+    (document.getElementById("cbRepName") as HTMLInputElement).value = '';
+    (document.getElementById("cbTrgName") as HTMLInputElement).value = '';
   }
   return (
     <>
@@ -43,6 +57,13 @@ const App: React.FC = () => {
       <input id="saCred" placeholder="SA creds"></input>
       <input id="ghTok" placeholder="gh token"></input>
       <input id="ghURL" placeholder="gh url"></input>
+      <input id="cName" placeholder="cluster name"></input>
+      <input id="arName" placeholder="artifact registry name"></input>
+      <input id="npName" placeholder="node pool name"></input>
+      <input id="nodeCount" placeholder="node count"></input>
+      <input id="cbConName" placeholder="cloubuild connection name"></input>
+      <input id="cbRepName" placeholder="cloubuild repo name"></input>
+      <input id="cbTrgName" placeholder="cloudbuild trigger name"></input>
       <button id="test" onClick={test}>click to submit</button>
       <script type = "application/typescript" src="./test.ts"></script>
       <div id="my-div"></div>

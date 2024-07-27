@@ -29,18 +29,6 @@ locals {
   ]
 }
 
-variable "cName"{type = string}
-variable "arName"{
-  type = string 
-  description = "must be in format [name]/[difName] ex. [harborMaster/main]"
-}
-
-variable "npName"{type = string}
-variable "nodeCount"{type = string}
-variable "cbConName"{type = string}
-variable "cbRepName"{type = string}
-variable "cbTrgName"{type = string}
-
 resource "local_file" "deploy" {
   content  = <<-EOF
     apiVersion: apps/v1
@@ -72,7 +60,7 @@ resource "local_file" "deploy" {
         spec:
           containers:
             - name: nodeappcontainer
-              image: us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest
+              image: us.gcr.io/PROJECT_ID/arName:latest
               imagePullPolicy: Always
               ports:
                 - containerPort: 80
@@ -90,56 +78,14 @@ resource "local_file" "deploy" {
   filename = "${path.module}/k8s/deploy.yml"
 }
 
-resource "local_file" "cloudbuild" {
-  depends_on = [local_file.deploy]
-  content  = <<-EOF
-    options:
-      logging: CLOUD_LOGGING_ONLY
-
-    service_account: "projects/local.envs.PROJECT_ID/serviceAccounts/local.envs.SA_EMAIL"
-
-    steps:
-      - name: 'gcr.io/cloud-builders/docker'
-        id: 'docker-build'
-        args:
-          - 'build'
-          - '-t'
-          - 'us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest'
-          - '.'
-
-      - name: 'gcr.io/cloud-builders/docker'
-        id: 'docker-push'
-        args:
-          - 'push'
-          - 'us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest'
-
-      - name: 'gcr.io/cloud-builders/gke-deploy'
-        id: 'prepare-deploy'
-        args:
-          - 'prepare'
-          - '--filename=${local_file.deploy.filename}'
-          - '--image=us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest'
-
-      - name: 'gcr.io/cloud-builders/gke-deploy'
-        id: 'apply-deploy'
-        args:
-          - 'apply'
-          - '--filename=output/expanded'
-          - '--cluster=primary'
-          - '--location=local.envs.COMPUTE_REGION'
-          - '--namespace=default'
-  EOF
-  filename = "${path.module}/cloudbuild.yaml"
-}
-
 provider "google" {
-  project="local.envs.PROJECT_ID"
+  project="PROJECT_ID"
   credentials = <<-EOF
-  local.envs.SA_credentials
+  SA_credentials
 EOF
 
-  region="local.envs.COMPUTE_REGION"
-  zone = "local.envs.COMPUTE_ZONE"
+  region="COMPUTE_REGION"
+  zone = "COMPUTE_ZONE"
 }
 
 data "google_client_config" "provider" {}
@@ -154,16 +100,16 @@ provider "docker" {
 }
 
 resource "docker_image" "image" {
-  name = "us.gcr.io/local.envs.PROJECT_ID/terraform/solo:latest"
+  name = "us.gcr.io/PROJECT_ID/arName:latest"
   build {
     context = ""
-    remote_context = "local.envs.GH_URL"
+    remote_context = "GH_URL"
   }
 }
 
 resource "google_project_service" "enabled_service" {
   for_each = toset(local.services)
-  project = "local.envs.PROJECT_ID"
+  project = "PROJECT_ID"
   service = each.key
   disable_dependent_services = true
 }
@@ -171,7 +117,7 @@ resource "google_project_service" "enabled_service" {
 resource "google_container_cluster" "primary" {
   depends_on = [google_project_service.enabled_service]
   name     = "primary"
-  location = "local.envs.COMPUTE_REGION"
+  location = "COMPUTE_REGION"
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
@@ -183,7 +129,7 @@ resource "google_container_cluster" "primary" {
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   depends_on = [google_container_cluster.primary]
   name       = "my-node-pool"
-  location   = "local.envs.COMPUTE_REGION"
+  location   = "COMPUTE_REGION"
   cluster    = google_container_cluster.primary.name
   node_count = 1
 
@@ -192,7 +138,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     machine_type = "e2-medium"
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = "local.envs.SA_EMAIL"
+    service_account = "SA_EMAIL"
     oauth_scopes    = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
@@ -210,14 +156,14 @@ resource "google_secret_manager_secret" "github-token-secret" {
 resource "google_secret_manager_secret_version" "github-token-secret-version" {
   depends_on = [google_secret_manager_secret.github-token-secret]
   secret = google_secret_manager_secret.github-token-secret.id
-  secret_data = "local.envs.GH_TOKEN"
+  secret_data = "GH_TOKEN"
 }
 
 data "google_iam_policy" "p4sa-secretAccessor" {
   binding {
     role = "roles/secretmanager.secretAccessor"
     // Here, 123456789 is the Google Cloud project number for the project that contains the connection.
-    members = ["serviceAccount:service-local.envs.PROJECT_NUMBER@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
+    members = ["serviceAccount:service-PROJECT_NUMBER@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
   }
 }
 
@@ -244,11 +190,11 @@ resource "docker_registry_image" "image" {
 
 resource "google_cloudbuildv2_connection" "my-connection" {
   depends_on = [google_secret_manager_secret_iam_policy.policy]
-  location = "local.envs.COMPUTE_REGION"
+  location = "COMPUTE_REGION"
   name = "my-connection"
   
   github_config {
-    app_installation_id = "local.envs.APP_INSTALLATION_ID"
+    app_installation_id = "APP_INSTALLATION_ID"
     authorizer_credential {
       oauth_token_secret_version = google_secret_manager_secret_version.github-token-secret-version.id
     }
@@ -258,13 +204,13 @@ resource "google_cloudbuildv2_connection" "my-connection" {
 resource "google_cloudbuildv2_repository" "my-repository" {
   depends_on = [google_cloudbuildv2_connection.my-connection]
   name = "solo-project"
-  location = "local.envs.COMPUTE_REGION"
+  location = "COMPUTE_REGION"
   parent_connection = google_cloudbuildv2_connection.my-connection.name
-  remote_uri = "local.envs.GH_URL"
+  remote_uri = "GH_URL"
 }
 
 resource "google_cloudbuild_trigger" "my-trigger" {
-  location = "local.envs.COMPUTE_REGION"
+  location = "COMPUTE_REGION"
   name     = "my-triggers"
   filename = local_file.cloudbuild.filename
   repository_event_config {
@@ -273,7 +219,7 @@ resource "google_cloudbuild_trigger" "my-trigger" {
       branch = "^main$"
     }
   }
-  service_account = "projects/local.envs.PROJECT_ID/serviceAccounts/local.envs.SA_EMAIL"
+  service_account = "projects/PROJECT_ID/serviceAccounts/SA_EMAIL"
 }
 provider "kubectl" {
   host = "https://${google_container_cluster.primary.endpoint}"

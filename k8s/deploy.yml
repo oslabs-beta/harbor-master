@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: nodeappcontainer
-          image: us.gcr.io/terraform-solo-test/solo/main/solo/main:latest
+          image: us.gcr.io/terraform-solo-test/solo/main:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
