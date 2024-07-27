@@ -3,6 +3,7 @@ import ClusterController from '../controllers/clusterController';
 
 const router = express.Router();
 
+//TODO THIS ENDPOINT NOT NEEDED
 router.get(
   '/nodes',
   ClusterController.getNodeList,
@@ -11,6 +12,7 @@ router.get(
   }
 );
 
+//TODO THIS ENDPOINT NOT NEEDED
 router.get(
   '/pods',
   ClusterController.getPodList,
@@ -23,7 +25,7 @@ router.get(
   '/details',
   ClusterController.getClusterMapping,
   (req: Request, res: Response): void => {
-    res.json({ RouteName: 'pod-list-Route' });
+    res.json({ RouteName: 'nodes-pods-maping-Route' });
   }
 );
 

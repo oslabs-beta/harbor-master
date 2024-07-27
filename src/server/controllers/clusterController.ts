@@ -7,11 +7,11 @@ import GcsNode from 'interfaces/Node';
 import GcsPod from 'interfaces/Pod';
 import cluster from 'cluster';
 
-const keyFilename = '../keys/k8-test-428619-f078a86334f9.json';
-const endpointIP = '34.71.141.14';
+// const keyFilename = '../keys/k8-test-428619-f078a86334f9.json';
+// const endpointIP = '34.71.141.14';
 
-// const keyFilename = '../keys/harbor-master-430602-f4f5fa8200ff.json';
-// const endpointIP = '35.223.235.243';
+const keyFilename = '../keys/harbor-master-430602-f4f5fa8200ff.json';
+const endpointIP = '35.223.235.243';
 
 const token = '';
 class ClusterController {
