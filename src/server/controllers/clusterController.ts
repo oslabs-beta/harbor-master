@@ -62,6 +62,10 @@ class ClusterController {
         location: cluster.location,
         nodeCount: cluster.currentNodeCount,
       }));
+
+      clusters.forEach((cluster: any) => {
+        console.log(cluster.endpoint);
+      });
       res.json(clusters);
     } catch (error) {
       // Pass errors to the error handling middleware
@@ -184,8 +188,9 @@ class ClusterController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const nodesUrl = `https://${endpointIP}/api/v1/nodes`;
-    const podsUrl = `https://${endpointIP}/api/v1/pods`;
+    // const nodesUrl = `https://${endpointIP}/api/v1/nodes`;
+    // const podsUrl = `https://${endpointIP}/api/v1/pods`;
+    const clusterUrl = `https://container.googleapis.com/v1/projects/${projectName}/locations/-/clusters`;
 
     try {
       // Fetch the access token
@@ -208,84 +213,120 @@ class ClusterController {
         agent,
       };
 
-      //TODO REPLACE WITH OPTIONS
-      //Parallel api requests
-      const [nodeApiResponse, podApiResponse] = await Promise.all([
-        fetch(nodesUrl, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          agent,
-        } as RequestInit),
-        fetch(podsUrl, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          agent,
-        } as RequestInit),
-      ]);
-
-      // Check the response
-      if (!nodeApiResponse.ok) {
-        throw new Error(
-          `Network node response was not ok: ${nodeApiResponse.statusText}`
-        );
-      }
-      if (!podApiResponse.ok) {
-        throw new Error(
-          `Network pod response was not ok: ${podApiResponse.statusText}`
-        );
-      }
+      // Make the API request
+      const clusterApiResponse = await fetch(clusterUrl, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        agent,
+      } as RequestInit);
 
       // Parse the response as JSON
-      const nodeData = await nodeApiResponse.json();
-      // console.log('Node Data received:', nodeData.items);
+      const data = await clusterApiResponse.json();
+      console.log('Data received:', data);
 
-      const podData = await podApiResponse.json();
-      // console.log('Pod Data received:', podData.items);
+      const clusters: GcsCluster[] = data.clusters.map((cluster: any) => ({
+        name: cluster.name,
+        zone: cluster.zone,
+        endpoint: cluster.endpoint,
+        location: cluster.location,
+        nodeCount: cluster.currentNodeCount,
+      }));
 
-      const nodeMap: { [key: string]: GcsNode } = {};
-      nodeData.items.forEach((item: any) => {
-        const nodeName = item.metadata.name;
-        if (nodeName) {
-          nodeMap[nodeName] = {
-            name: nodeName,
-            zone: item.metadata.labels['topology.kubernetes.io/zone'],
-            region: item.metadata.labels['topology.kubernetes.io/region'],
-            cpuCapacity: item.status.capacity.cpu,
-            storageCapacity: item.status.capacity['ephemeral-storage'],
-            memoryCapacity: item.status.capacity.memory,
-            cpuAllocated: item.status.allocatable.cpu,
-            storageAllocated: item.status.allocatable['ephemeral-storage'],
-            memoryAllocated: item.status.allocatable.memory,
-            pods: [],
-          };
-        }
-      });
-      podData.items
-        .filter(
-          (pod: any) =>
-            pod.metadata.labels.app &&
-            pod.metadata.namespace !== 'kube-system' &&
-            pod.metadata.namespace !== 'gke-gmp-system'
-        )
-        .forEach((pod: any) => {
-          const nodeName = pod.spec.nodeName;
-          if (nodeName && nodeMap[nodeName]) {
-            nodeMap[nodeName].pods.push({
-              name: pod.metadata.name,
-              parent: pod.metadata.labels.app,
-              cluster: pod.spec.containers.name,
-              nodeName: pod.spec.nodeName,
-              status: pod.status.phase,
-            });
+      const results: GcsCluster[] = await Promise.all(
+        clusters.map(async (cluster) => {
+          const nodesUrl = `https://${endpointIP}/api/v1/nodes`;
+          const podsUrl = `https://${endpointIP}/api/v1/pods`;
+          //TODO REPLACE WITH OPTIONS
+          //Parallel api requests
+          const [nodeApiResponse, podApiResponse] = await Promise.all([
+            fetch(nodesUrl, {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              agent,
+            } as RequestInit),
+            fetch(podsUrl, {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              agent,
+            } as RequestInit),
+          ]);
+
+          // Check the response
+          if (!nodeApiResponse.ok) {
+            throw new Error(
+              `Network node response was not ok: ${nodeApiResponse.statusText}`
+            );
           }
-        });
-      res.json(nodeMap);
+          if (!podApiResponse.ok) {
+            throw new Error(
+              `Network pod response was not ok: ${podApiResponse.statusText}`
+            );
+          }
+
+          // Parse the response as JSON
+          const nodeData = await nodeApiResponse.json();
+          // console.log('Node Data received:', nodeData.items);
+
+          const podData = await podApiResponse.json();
+          // console.log('Pod Data received:', podData.items);
+
+          const nodeMap: { [key: string]: GcsNode } = {};
+          nodeData.items.forEach((item: any) => {
+            const nodeName = item.metadata.name;
+            if (nodeName) {
+              nodeMap[nodeName] = {
+                name: nodeName,
+                zone: item.metadata.labels['topology.kubernetes.io/zone'],
+                region: item.metadata.labels['topology.kubernetes.io/region'],
+                cpuCapacity: item.status.capacity.cpu,
+                storageCapacity: item.status.capacity['ephemeral-storage'],
+                memoryCapacity: item.status.capacity.memory,
+                cpuAllocated: item.status.allocatable.cpu,
+                storageAllocated: item.status.allocatable['ephemeral-storage'],
+                memoryAllocated: item.status.allocatable.memory,
+                pods: [],
+              };
+            }
+          });
+          podData.items
+            .filter(
+              (pod: any) =>
+                pod.metadata.labels.app &&
+                pod.metadata.namespace !== 'kube-system' &&
+                pod.metadata.namespace !== 'gke-gmp-system'
+            )
+            .forEach((pod: any) => {
+              const nodeName = pod.spec.nodeName;
+              if (nodeName && nodeMap[nodeName]) {
+                nodeMap[nodeName].pods.push({
+                  name: pod.metadata.name,
+                  parent: pod.metadata.labels.app,
+                  cluster: pod.spec.containers.name,
+                  nodeName: pod.spec.nodeName,
+                  status: pod.status.phase,
+                });
+              }
+            });
+          return {
+            name: cluster.name,
+            zone: cluster.zone,
+            endpoint: cluster.endpoint,
+            location: cluster.location,
+            nodeCount: cluster.nodeCount,
+            nodes: Object.values(nodeMap), // Convert nodeMap object to array
+          };
+        })
+      );
+      res.json(results);
     } catch (error) {
       //TODO add error handeling
       next(error);
