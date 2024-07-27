@@ -211,8 +211,7 @@ resource "google_cloudbuildv2_repository" "my-repository" {
 
 resource "google_cloudbuild_trigger" "my-trigger" {
   location = "COMPUTE_REGION"
-  name     = "my-triggers"
-  filename = local_file.cloudbuild.filename
+  name     = "cbTrgName"
   repository_event_config {
     repository = google_cloudbuildv2_repository.my-repository.id
     push {
@@ -220,6 +219,49 @@ resource "google_cloudbuild_trigger" "my-trigger" {
     }
   }
   service_account = "projects/PROJECT_ID/serviceAccounts/SA_EMAIL"
+   build {
+    options {
+      logging = "CLOUD_LOGGING_ONLY"
+    }
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      id   = "docker-build"
+      args = [
+        "build",
+        "-t",
+        "us.gcr.io/PROJECT_ID/arName:latest",
+        "."
+      ]
+    }
+    step{
+      name="gcr.io/cloud-builders/docker"
+      id="docker-push"
+      args = [
+        "push",
+        "us.gcr.io/PROJECT_ID/arName:latest"
+      ]
+    }
+    step{
+      name="gcr.io/cloud-builders/gke-deploy"
+      id="prepare-deploy"
+      args = [
+        "prepare",
+        "filename=${local_file.deploy.filename}",
+        "--image=us.gcr.io/PROJECT_ID/arName:latest"
+      ]
+    }
+    step{
+      name="gcr.io/cloud-builders/gke-deploy"
+      id="apply-deploy"
+      args = [
+        "apply",
+        "--filename=output/expanded",
+        "--cluster=cName",
+        "--location=COMPUTE_REGION",
+        "--namespace=default"
+      ]
+    }
+  }
 }
 provider "kubectl" {
   host = "https://${google_container_cluster.primary.endpoint}"
