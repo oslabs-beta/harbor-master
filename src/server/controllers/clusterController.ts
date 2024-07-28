@@ -1,22 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
-// const fetch = require('node-fetch'); // CommonJS import
 import https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
-import { GoogleAuth } from 'google-auth-library';
 import GcsNode from 'interfaces/Node';
 import GcsPod from 'interfaces/Pod';
-import cluster from 'interfaces/Cluster';
 import { getToken } from '../services/gkeService';
 import GcsCluster from 'interfaces/Cluster';
 
 // const keyFilename = '../keys/k8-test-428619-f078a86334f9.json';
 // const endpointIP = '34.71.141.14';
 
+//TODO PASS THE KEY FILE NAME AND PROJECT NAME
 const keyFilename = '../keys/harbor-master-430602-f4f5fa8200ff.json';
 const projectName = 'harbor-master-430602';
+
+//TODO THIS IS ONLY TO TEST SINGLE APIs NOT THE DETAIL ONE
 const endpointIP = '34.173.62.141';
 
-const token = '';
 class ClusterController {
   //TODO THIS MIDDLEWARE NO LONGER NEEDED
   public async getClusterList(
@@ -31,8 +30,6 @@ class ClusterController {
       const agent = new https.Agent({
         rejectUnauthorized: false, // This will ignore the certificate verification
       });
-      // Log the access token (for debugging)
-      console.log('Access Token:', accessToken);
 
       // Make the API request
       const apiResponse = await fetch(url, {
@@ -53,7 +50,6 @@ class ClusterController {
 
       // Parse the response as JSON
       const data = await apiResponse.json();
-      console.log('Data received:', data);
 
       const clusters: GcsCluster[] = data.clusters.map((cluster: any) => ({
         name: cluster.name,
@@ -63,9 +59,6 @@ class ClusterController {
         nodeCount: cluster.currentNodeCount,
       }));
 
-      clusters.forEach((cluster: any) => {
-        console.log(cluster.endpoint);
-      });
       res.json(clusters);
     } catch (error) {
       // Pass errors to the error handling middleware
@@ -87,8 +80,6 @@ class ClusterController {
       const agent = new https.Agent({
         rejectUnauthorized: false, // This will ignore the certificate verification
       });
-      // Log the access token (for debugging)
-      console.log('Access Token:', accessToken);
 
       // Make the API request
       const apiResponse = await fetch(url, {
@@ -109,12 +100,9 @@ class ClusterController {
 
       // Parse the response as JSON
       const data = await apiResponse.json();
-      console.log('Data received:', data.items);
 
       const nodes: GcsNode[] = data.items.map((item: any) => ({
         name: item.metadata.name,
-        // zone: item.metadata.labels.topology['gke.io/zone'],
-        // region: item.metadata.labels.topology['kubernetes.io/region'],
         cpuCapacity: item.status.capacity.cpu,
         storageCapacity: item.status.capacity['ephemeral-storage'],
         memoryCapacity: item.status.capacity.memory,
@@ -122,7 +110,7 @@ class ClusterController {
         storageAllocated: item.status.allocatable['ephemeral-storage'],
         memoryAllocated: item.status.allocatable.memory,
       }));
-      console.log('this is the nodes ->', nodes);
+
       // Send the data to the client
       res.json(nodes);
     } catch (error) {
@@ -144,8 +132,6 @@ class ClusterController {
       const agent = new https.Agent({
         rejectUnauthorized: false, // This will ignore the certificate verification
       });
-      // Log the access token (for debugging)
-      console.log('Access Token:', accessToken);
 
       // Make the API request
       const apiResponse = await fetch(url, {
@@ -166,7 +152,6 @@ class ClusterController {
 
       // Parse the response as JSON
       const data = await apiResponse.json();
-      console.log('Data received:', data.items);
 
       const pods: GcsPod = data.items
         .filter((pod: any) => pod.metadata.labels.app)
@@ -188,8 +173,6 @@ class ClusterController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    // const nodesUrl = `https://${endpointIP}/api/v1/nodes`;
-    // const podsUrl = `https://${endpointIP}/api/v1/pods`;
     const clusterUrl = `https://container.googleapis.com/v1/projects/${projectName}/locations/-/clusters`;
 
     try {
@@ -225,7 +208,6 @@ class ClusterController {
 
       // Parse the response as JSON
       const data = await clusterApiResponse.json();
-      console.log('Data received:', data);
 
       const clusters: GcsCluster[] = data.clusters.map((cluster: any) => ({
         name: cluster.name,
@@ -322,7 +304,7 @@ class ClusterController {
             endpoint: cluster.endpoint,
             location: cluster.location,
             nodeCount: cluster.nodeCount,
-            nodes: Object.values(nodeMap), // Convert nodeMap object to array
+            nodes: Object.values(nodeMap),
           };
         })
       );
@@ -330,29 +312,6 @@ class ClusterController {
     } catch (error) {
       //TODO add error handeling
       next(error);
-    }
-  }
-
-  public async getToken(fileName: string): Promise<string> {
-    try {
-      const auth = new GoogleAuth({
-        keyFile: fileName,
-        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-      });
-
-      const client = await auth.getClient();
-      const tokenResponse = await client.getAccessToken();
-      const accessToken = tokenResponse.token;
-
-      if (!accessToken) {
-        throw new Error('Failed to obtain access token');
-      }
-
-      console.log('Access Token:', accessToken);
-      return accessToken;
-    } catch (err) {
-      console.error('Error obtaining access token:', err);
-      throw err;
     }
   }
 }

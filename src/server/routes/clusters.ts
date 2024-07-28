@@ -3,6 +3,7 @@ import ClusterController from '../controllers/clusterController';
 
 const router = express.Router();
 
+//TODO THIS ENDPOINT NOT NEEDED
 router.get(
   '/clusters',
   ClusterController.getClusterList,
