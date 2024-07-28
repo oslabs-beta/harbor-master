@@ -197,14 +197,7 @@ class ClusterController {
       };
 
       // Make the API request
-      const clusterApiResponse = await fetch(clusterUrl, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        agent,
-      } as RequestInit);
+      const clusterApiResponse = await fetch(clusterUrl, options);
 
       // Parse the response as JSON
       const data = await clusterApiResponse.json();
@@ -224,22 +217,8 @@ class ClusterController {
           //TODO REPLACE WITH OPTIONS
           //Parallel api requests
           const [nodeApiResponse, podApiResponse] = await Promise.all([
-            fetch(nodesUrl, {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-              },
-              agent,
-            } as RequestInit),
-            fetch(podsUrl, {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-              },
-              agent,
-            } as RequestInit),
+            fetch(nodesUrl, options),
+            fetch(podsUrl, options),
           ]);
 
           // Check the response

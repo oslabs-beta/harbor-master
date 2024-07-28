@@ -17,7 +17,6 @@ export async function getToken(fileName: string): Promise<string> {
       throw new Error('Failed to obtain access token');
     }
 
-    console.log('Access Token:', accessToken);
     return accessToken;
   } catch (err) {
     console.error('Error obtaining access token:', err);
