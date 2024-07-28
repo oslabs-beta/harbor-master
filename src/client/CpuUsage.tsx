@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 
 export function CpuUsage(props:any) {
     const [data, setData] = useState([[]]);
-
     useEffect(() => {
       fetch('/metrics/cpuUsagePercentage/' + props.from + '/' + props.to)
         .then(res => res.json())
@@ -13,7 +12,7 @@ export function CpuUsage(props:any) {
         
     })
     .catch(e => console.log('error retreiving cpu data from back end server'));
-    },[]);
+    },[props]);
 
       const options = {
         chart: {

@@ -3,14 +3,18 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { App }  from './App';
-
+import Metrics from './Metrics';
+import { CpuUsage } from './CpuUsage';
+import { MemoryUsage } from './MemoryUsage';
 
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
+    <>
     <Provider store={store}>
-      <App/>
+      <Metrics />
     </Provider>
-  </React.StrictMode>,
+  {/* </React.StrictMode> */}
+  </>,
   document.getElementById('app')
 );

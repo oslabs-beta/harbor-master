@@ -3,9 +3,7 @@ import { Chart } from "react-google-charts";
 import { useState, useEffect } from "react";
 
 export function MemoryUsage(props: any) {
-
     const [data, setData] = useState([[]]);
-
     useEffect(() => {
       fetch('/metrics/memoryUsage/'+ props.from + '/' + props.to)
         .then(res => res.json())
@@ -14,7 +12,7 @@ export function MemoryUsage(props: any) {
         
     })
     .catch(e => console.log('error retreiving memory data from back end server'));
-    },[]);
+    },[props]);
 
       const options = {
         chart: {
