@@ -115,7 +115,7 @@ resource "google_project_service" "enabled_service" {
 
 resource "google_container_cluster" "primary" {
   depends_on = [google_project_service.enabled_service]
-  name     = "primary"
+  name     = "cName"
   location = "COMPUTE_REGION"
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -127,7 +127,7 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   depends_on = [google_container_cluster.primary]
-  name       = "my-node-pool"
+  name       = "npName"
   location   = "COMPUTE_REGION"
   cluster    = google_container_cluster.primary.name
   node_count = 1
@@ -190,7 +190,7 @@ resource "docker_registry_image" "image" {
 resource "google_cloudbuildv2_connection" "my-connection" {
   depends_on = [google_secret_manager_secret_iam_policy.policy]
   location = "COMPUTE_REGION"
-  name = "my-connection"
+  name = "cbConName"
   
   github_config {
     app_installation_id = "APP_INSTALLATION_ID"

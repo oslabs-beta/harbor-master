@@ -69,7 +69,6 @@ function makeT(req: Request, res: Response, next: NextFunction): void {
       .replace(/GH_TOKEN/g, req.body.ghTok)
       .replace(/GH_URL/g, req.body.ghURL)
       .replace(/cName/g, req.body.cName)
-      .replace(/cName/g, req.body.cName)
       .replace(/arName/g, req.body.arName)
       .replace(/npName/g, req.body.npName)
       .replace(/nodeCount/g, req.body.nodeCount)
@@ -88,15 +87,15 @@ function makeT(req: Request, res: Response, next: NextFunction): void {
     });
   });
 
-executeInXterm('terraform init && terraform plan && terraform apply -auto-approve', (error, output) => {
-  if (error) {
-    fs.unlink('terraform.tf.state',()=>{});
-    fs.unlink('terraform.tf.state.backup',()=>{});
-    res.locals.message = error.message;
-    return next(error.message);
-  }else{
-    return next();
-  }
-})
+  executeInXterm('terraform init && terraform plan && terraform apply -auto-approve', (error, output) => {
+    if (error) {
+      fs.unlink('terraform.tf.state',()=>{});
+      fs.unlink('terraform.tf.state.backup',()=>{});
+      res.locals.message = error.message;
+      return next(error.message);
+    }else{
+      return next();
+    }
+  })
 }
 export default makeT;
