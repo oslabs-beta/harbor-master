@@ -59,7 +59,7 @@ function makeT(req: Request, res: Response, next: NextFunction): void {
     let creds: string = req.body.saCred;
     if (typeof req.body.saCred === 'object') creds = JSON.stringify(req.body.saCred);
 
-    let result = data.replace(/local.envs.APP_INSTALLATION_ID/g, req.body.appId)
+    let result = data.replace(/APP_INSTALLATION_ID/g, req.body.appId)
       .replace(/PROJECT_ID/g, req.body.projId)
       .replace(/PROJECT_NUMBER/g, req.body.projNum)
       .replace(/SA_EMAIL/g, req.body.saMail)
@@ -75,7 +75,8 @@ function makeT(req: Request, res: Response, next: NextFunction): void {
       .replace(/nodeCount/g, req.body.nodeCount)
       .replace(/cbConName/g, req.body.cbConName)
       .replace(/cbRepName/g, req.body.cbRepName)
-      .replace(/cbTrgName/g, req.body.cbTrgName);
+      .replace(/cbTrgName/g, req.body.cbTrgName)
+      .replace(/branchName/g, req.body.branchName);
 
       
 

@@ -28,7 +28,6 @@ locals {
     "artifactregistry.googleapis.com",
   ]
 }
-
 resource "local_file" "deploy" {
   content  = <<-EOF
     apiVersion: apps/v1
@@ -215,7 +214,7 @@ resource "google_cloudbuild_trigger" "my-trigger" {
   repository_event_config {
     repository = google_cloudbuildv2_repository.my-repository.id
     push {
-      branch = "^main$"
+      branch = "branchName"
     }
   }
   service_account = "projects/PROJECT_ID/serviceAccounts/SA_EMAIL"

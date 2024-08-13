@@ -136,3 +136,4 @@ dist
 /.terraform
 terraform.*
 main.tf
+.terraform 

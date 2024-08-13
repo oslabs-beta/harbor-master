@@ -25,7 +25,8 @@ const App: React.FC = () => {
           "nodeCount":(document.getElementById("nodeCount") as HTMLInputElement).value,
           "cbConName":(document.getElementById("cbConName") as HTMLInputElement).value,
           "cbRepName":(document.getElementById("cbRepName") as HTMLInputElement).value,
-          "cbTrgName":(document.getElementById("cbTrgName") as HTMLInputElement).value
+          "cbTrgName":(document.getElementById("cbTrgName") as HTMLInputElement).value,
+          "branchName":(document.getElementById("branchName") as HTMLInputElement).value
         })
     });
     (document.getElementById("appId") as HTMLInputElement).value = '';
@@ -44,6 +45,7 @@ const App: React.FC = () => {
     (document.getElementById("cbConName") as HTMLInputElement).value = '';
     (document.getElementById("cbRepName") as HTMLInputElement).value = '';
     (document.getElementById("cbTrgName") as HTMLInputElement).value = '';
+    (document.getElementById("branchName") as HTMLInputElement).value = '';
   }
   return (
     <>
@@ -57,6 +59,7 @@ const App: React.FC = () => {
       <input id="saCred" placeholder="SA creds"></input>
       <input id="ghTok" placeholder="gh token"></input>
       <input id="ghURL" placeholder="gh url"></input>
+      <input id="branchName" placeholder="github branch name"></input>
       <input id="cName" placeholder="cluster name"></input>
       <input id="arName" placeholder="artifact registry name"></input>
       <input id="npName" placeholder="node pool name"></input>
