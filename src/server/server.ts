@@ -8,10 +8,19 @@ import { handleError } from './controllers/errorController';
 import UploadService from './services/UploadService';
 import { ProjectModel } from './config/mongoConfig';
 
-const app = express();
+import * as bodyParser from 'body-parser';
+import clusters from './routes/clusters';
+import loggerMiddleware from './middlewares/logger';
 
+require('dotenv').config();
+
+const app = express();
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(loggerMiddleware);
+
 app.use(express.static(path.join(__dirname, '../../public')));
+app.use('/api/clusters', clusters);
 
 const uploadService = new UploadService();
 const uploadFileMiddleware = uploadService.generateUploadMiddleware();
