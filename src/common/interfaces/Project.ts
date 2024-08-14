@@ -1,12 +1,21 @@
 import Vertex from "interfaces/Vertex";
 import Edge from "interfaces/Edge";
+import ServiceAccountCredentials from "interfaces/ServiceAccountCredentials";
 
 export default interface Project {
   id: string
   userId: string
-  googleCloudId: string
+  appInstallationId: string
+  gcpProjectId: string
+  gcpProjectNumber: number
+  gcpServiceAcctEmail: string
+  gcpRegion: string
+  gcpComputeZone: string
+  gcpServiceAccounts: ServiceAccountCredentials[]
+  terraformState: object
+  githubToken: string
+  githubUrl: string
   createdAt: string
-  googleRegion: string
   vertices: Vertex[]
   edges: Edge[]
 }
