@@ -8,8 +8,8 @@ import { MemoryUsage } from './MemoryUsage';
 import { useState } from "react";
 
 export default function Metrics() {
-  const [from, setFrom] = useState('2024-7-16T00:00:00Z');
-  const [to, setTo] = useState('2024-7-16T00:10:00Z');
+  const [from, setFrom] = useState(''); //2024-7-16T00:00:00Z
+  const [to, setTo] = useState(''); //2024-7-16T00:10:00Z
   
   const fromDatePicked = (e: any) => {
     setFrom(e.$y + '-' + (Number(e.$M)+1) + '-' + e.$D + 'T' + e.$H + ':' + e.$m + ':' + '00Z');
