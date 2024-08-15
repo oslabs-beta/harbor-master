@@ -16,6 +16,7 @@
     "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "google-auth-library": "^9.11.0",
     "mongoose": "^8.4.1",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.2",
