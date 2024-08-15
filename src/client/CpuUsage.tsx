@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 export function CpuUsage(props:any) {
     const [data, setData] = useState([[]]);
     useEffect(() => {
-      fetch('/metrics/cpuUsagePercentage/' + props.from + '/' + props.to)
+      fetch('http://localhost:3000/metrics/cpuUsagePercentage/' + props.from + '/' + props.to)
         .then(res => res.json())
         .then(data => {
         setData(data);

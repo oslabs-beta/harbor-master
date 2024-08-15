@@ -6,7 +6,7 @@ export function Cores(props:any) {
     const [data, setData] = useState([[]]);
 
     useEffect(() => {
-      fetch('/metrics/cores/' + props.from + '/' + props.from)
+      fetch('http://localhost:3000/metrics/cores/' + props.from + '/' + props.from)
         .then(res => res.json())
         .then(data => {
             

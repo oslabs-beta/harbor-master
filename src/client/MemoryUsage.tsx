@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 export function MemoryUsage(props: any) {
     const [data, setData] = useState([[]]);
     useEffect(() => {
-      fetch('/metrics/memoryUsage/'+ props.from + '/' + props.to)
+      fetch('http://localhost:3000/metrics/memoryUsage/'+ props.from + '/' + props.to)
         .then(res => res.json())
         .then(data => {
         setData(data);

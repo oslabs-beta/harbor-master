@@ -6,7 +6,7 @@ export function TotalMemory(props:any) {
     const [data, setData] = useState([[]]);
 
     useEffect(() => {
-      fetch('/metrics/totalMemory/' + props.from + '/' + props.from)
+      fetch('http://localhost:3000/metrics/totalMemory/' + props.from + '/' + props.from)
         .then(res => res.json())
         .then(data => {
             
