@@ -5,7 +5,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { CpuUsage } from './CpuUsage';
 import { MemoryUsage } from './MemoryUsage';
+import { TotalMemory } from './TotalMemory';
+import { Cores } from './Cores';
 import { useState } from "react";
+
 
 export default function Metrics() {
   const [from, setFrom] = useState(''); //2024-7-16T00:00:00Z
@@ -35,6 +38,8 @@ export default function Metrics() {
  
     <CpuUsage from={from} to={to}/>
     <MemoryUsage from={from} to={to}/>
+    <TotalMemory from={from} to={from}/>
+    <Cores from={from} to={from}/>
   </div>
   );
 }

@@ -17,7 +17,7 @@ interface cpuUsage {
 };
 
 const getMetrics = (rawData: cpuUsage, dataType:string, metricType: string) => {
-  
+  if(!rawData['timeSeries'])return;
   const instances: string[] = [];
   const points_array: string[][] = [];
   const processed_points: any[][] = [];

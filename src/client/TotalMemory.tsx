@@ -14,7 +14,7 @@ export function TotalMemory(props:any) {
         
     })
     .catch(e => console.log('error retreiving cpu data from back end server'));
-    },[]);
+    },[props]);
 
       const options = {
         chart: {
@@ -25,7 +25,7 @@ export function TotalMemory(props:any) {
 
   return (
     <Chart
-      chartType="Bar"
+      chartType="Table"
       width="100%"
       height="400px"
       data={data}
