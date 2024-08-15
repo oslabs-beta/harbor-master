@@ -75,7 +75,7 @@ const Deployments: React.FC = () => {
     saMail: 'terraform@hmlivetest.iam.gserviceaccount.com',
     compR: 'us-central1',
     compZ: 'us-central1-a',
-    ghTok: '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',
+    ghTok: 'ghp_Txxxxxxxxxxxxxxxxf',
     ghURL: 'https://github.com/Crossur/Solo-Project.git',
     cName: 'primary',
     arName: 'hb/test',
