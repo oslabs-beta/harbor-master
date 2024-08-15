@@ -13,7 +13,7 @@ export default class EmptyProject implements Project {
   gcpRegion: string
   gcpComputeZone: string
   gcpServiceAccounts: ServiceAccountCredentials[]
-  terraformState: object;
+  terraformState: object
   githubToken: string
   githubUrl: string
   createdAt: string
