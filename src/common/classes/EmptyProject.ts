@@ -1,9 +1,10 @@
 import Edge from "interfaces/Edge";
-import Project from "interfaces/Project";
+import ProjectProperties from "interfaces/ProjectProperties";
 import ServiceAccountCredentials from "interfaces/ServiceAccountCredentials";
+import UserDeploymentOptions from "interfaces/UserDeploymentOptions";
 import Vertex from "interfaces/Vertex";
 
-export default class EmptyProject implements Project {
+export default class EmptyProject implements ProjectProperties {
   id: string
   userId: string
   appInstallationId: string
@@ -13,6 +14,7 @@ export default class EmptyProject implements Project {
   gcpRegion: string
   gcpComputeZone: string
   gcpServiceAccounts: ServiceAccountCredentials[]
+  deploymentOptions: UserDeploymentOptions
   terraformState: object
   githubToken: string
   githubUrl: string
@@ -30,6 +32,7 @@ export default class EmptyProject implements Project {
     this.gcpRegion = '';
     this.gcpComputeZone = '';
     this.gcpServiceAccounts = [];
+    this.deploymentOptions = {} as UserDeploymentOptions;
     this.terraformState = {};
     this.githubToken = '';
     this.githubUrl = '';

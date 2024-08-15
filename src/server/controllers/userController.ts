@@ -24,12 +24,15 @@ export const callback: AsyncMiddleware = async (req, res, next) => {
     );
     const githubResponse = await response.json();
     const { access_token, token_type } = githubResponse;
-    // const { expires_in, refresh_token, refresh_token_expires_in, scope } = githubResponse;
     res.cookie('githubAuthToken', access_token, { httpOnly: true });
-    return res.redirect('/');
+    res.locals.token = access_token;
+    return next();
   } 
   catch (error) {
-    return next({ log: `authController.callback: ${error}`, message: { err: 'Server error while trying to log in with GitHub' } } );
+    return next({ 
+      log: `authController.callback: ${error}`, 
+      message: { err: 'Server error while trying to log in with GitHub' } 
+    });
   }
 };
 

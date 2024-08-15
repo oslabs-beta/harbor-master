@@ -2,14 +2,15 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import config from './config/envConfig';
-import { createProject, getProjectById, editProjectState } from './controllers/projectController';
+import { createProject, getProjectById, deployProject } from './controllers/projectController';
 import { githubLogin, callback, getRepositories, getUser, verifyUser } from './controllers/userController';
 import { handleError } from './controllers/errorController';
 import UploadService from './services/UploadService';
-import { ProjectModel } from './config/mongoConfig';
+import { ProjectModel, UserModel } from './config/mongoConfig';
 
 const app = express();
 
+app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../../public')));
 
@@ -35,10 +36,13 @@ app.post('/create-project', uploadFileMiddleware, createProject, (req, res) => {
 app.get('/get-project/:id', getProjectById, (req, res) => {
   res.json(res.locals.project)
 })
+app.post('/deploy/:id', getProjectById, deployProject, (req, res) => {
+  res.sendStatus(200);
+})
 
 // auth controller
 app.get('/login', githubLogin);
-app.get('/auth-callback', callback);
+app.get('/auth-callback', callback, getUser, verifyUser, (req, res) => res.json({ register: 'success' }));
 app.get('/get-repos', getRepositories, (req, res) => {
   res.json(res.locals.repos)
 });
@@ -46,7 +50,7 @@ app.get('/get-user', getUser, verifyUser, (req, res) => {
   res.json(res.locals.user);
 })
 
-// mock endpoint to check db
+// mock endpoint to check db, for development only
 app.get('/read-db', async (req, res) => {
   const response = await ProjectModel.find();
   res.json(response);

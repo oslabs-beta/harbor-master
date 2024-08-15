@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import Project from 'interfaces/Project';
+import Project from 'interfaces/ProjectProperties';
 import Vertex from 'interfaces/Vertex';
 import Edge from 'interfaces/Edge';
 import ProjectState from "interfaces/ProjectState";
@@ -41,7 +41,7 @@ const graphSlice = createSlice({
     deleteVertexById(state, action: PayloadAction<number>) {
       // requires deleting vertex and any edges attached to it
       state.workingProject.vertices = state.workingProject.vertices.filter(v => v.id !== action.payload)
-      state.workingProject.edges = state.workingProject.edges.filter(e => !e.endpoints.includes(action.payload));
+      state.workingProject.edges = state.workingProject.edges.filter(e => !e.endpointVertexIds.includes(action.payload));
     },
 
     modifyVertex(state, action: PayloadAction<Vertex>) {
@@ -67,7 +67,7 @@ const graphSlice = createSlice({
     modifyEdgeEndpoints(state, action: PayloadAction<Edge>) {
       // send payload representing new edge data - id and desired endpoint vertices
       state.workingProject.edges.forEach(e => {
-        if (e.id === action.payload.id) e.endpoints = action.payload.endpoints;
+        if (e.id === action.payload.id) e.endpointVertexIds = action.payload.endpointVertexIds;
       });
     }
   }
