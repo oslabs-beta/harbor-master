@@ -17,7 +17,7 @@ const graphSlice = createSlice({
     /* individual state changes do NOT update the db - 
     we'll have save button to batch update db with all graph changes since last save */
 
-    setCurrentProject(state, action: PayloadAction<Project>) {
+    setCurrentProject(state, action: PayloadAction<ProjectProperties>) {
       // use when loading project from grid view or creating new project from scratch
       // creating new project should add new Project document to the db and immediately retrieve record
       Object.assign(state, action.payload);
