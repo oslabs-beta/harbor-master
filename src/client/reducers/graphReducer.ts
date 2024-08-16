@@ -1,15 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import Project from 'interfaces/ProjectProperties';
+import ProjectProperties from 'interfaces/ProjectProperties';
 import Vertex from 'interfaces/Vertex';
 import Edge from 'interfaces/Edge';
 import ProjectState from "interfaces/ProjectState";
-import EmptyProject from "../../common/classes/EmptyProject";
 
 // state represents current project
 const initialState: ProjectState = {
-  workingProject: new EmptyProject(),
-  lastSavedProject: new EmptyProject()
-}
+  workingProject: {} as ProjectProperties,
+  lastSavedProject: {} as ProjectProperties
+};
 
 const graphSlice = createSlice({
   name: 'graph',
