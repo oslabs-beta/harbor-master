@@ -25,6 +25,7 @@ import cors from 'cors';
 
 require('dotenv').config();
 
+const fetch = require('node-fetch');
 const app = express();
 app.use(
   cors({
@@ -36,6 +37,9 @@ app.use(bodyParser.json());
 app.use(loggerMiddleware);
 
 app.use(express.static(path.join(__dirname, '../../public')));
+const ashraf_metrics = require('./routes/ashraf_routes');
+
+app.use('/metrics', ashraf_metrics);
 app.use('/api/clusters', clusters);
 
 const uploadService = new UploadService();
