@@ -86,7 +86,6 @@ web_modules/
 # Next.js build output
 .next
 out
-
 # Nuxt.js build / generate output
 .nuxt
 dist
@@ -131,3 +130,12 @@ dist
 
 # .DS_Store
 .DS_Store
+
+#terraform
+.terraform.*
+/.terraform
+terraform.*
+main.tf
+.terraform 
+terraform.tfstate
+terraform-solo-test-cc74ef60ebc0.json

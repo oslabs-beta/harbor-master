@@ -19,11 +19,11 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
   },
   compR: {
     label: 'Compute Region',
-    subLabel: 'Region where your resources are located.',
+    subLabel: 'Region where you want your resources to be located ex.(us-central1)',
   },
   compZ: {
     label: 'Compute Zone',
-    subLabel: 'Specific zone within the compute region.',
+    subLabel: 'Specific zone within the compute region ex.(us-central1-a)',
   },
   ghTok: {
     label: 'GitHub Token',
@@ -34,8 +34,8 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
     subLabel: 'URL of the GitHub repository.',
   },
   cName: {
-    label: 'Container Name',
-    subLabel: 'Name of the container to be used.',
+    label: 'Cluster Name',
+    subLabel: 'What you want the kubernetes cluster to be named.',
   },
   arName: {
     label: 'Artifact Name',
@@ -69,22 +69,22 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
 
 const Deployments: React.FC = () => {
   const initialData = {
-    appId: '51725755',
-    projId: 'hmlivetest',
-    projNum: '276680725178',
-    saMail: 'terraform@hmlivetest.iam.gserviceaccount.com',
-    compR: 'us-central1',
-    compZ: 'us-central1-a',
-    ghTok: 'ghp_Txxxxxxxxxxxxxxxxf',
-    ghURL: 'https://github.com/Crossur/Solo-Project.git',
-    cName: 'primary',
-    arName: 'hb/test',
-    npName: 'test-node-pool',
-    nodeCount: '1',
-    cbConName: 'test-connection',
-    cbRepName: 'test-repo',
-    cTrgName: 'test-trigger',
-    branchName: 'main',
+    appId: '',
+    projId: '',
+    projNum: '',
+    saMail: '',
+    compR: '',
+    compZ: '',
+    ghTok: '',
+    ghURL: '',
+    cName: '',
+    arName: '',
+    npName: '',
+    nodeCount: '',
+    cbConName: '',
+    cbRepName: '',
+    cTrgName: '',
+    branchName: '',
   };
 
   const [formData, setFormData] = useState(initialData);
