@@ -50,6 +50,14 @@ class DeploymentService {
 
     const child: ChildProcess = spawn(fullCommand, { shell: true });
 
+    child.stdout?.on('data', (data) => {
+      callback(null, data);
+    });
+
+    child.stderr?.on('error', (error) => {
+      callback(error, '')
+    })
+
     child.on('error', (error: Error) => {
       console.error('Error occurred in xterm:', error);
       callback(error, '');
