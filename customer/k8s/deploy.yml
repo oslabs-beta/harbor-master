@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeappdeployment
+  namespace: default
+  labels:
+    app: nodeapp
+    type: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodeapp
+      type: backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: '2024-07-07T18:50:51-04:00'
+      labels:
+        app: nodeapp
+        type: backend
+    spec:
+      containers:
+        - name: nodeappcontainer
+          image: us.gcr.io/hmlivetest/solo/project:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+              readOnly: false
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket

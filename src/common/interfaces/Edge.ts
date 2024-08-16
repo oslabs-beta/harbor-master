@@ -1,4 +1,4 @@
 export default interface Edge {
   id: number
-  endpoints: [number, number]
+  endpointVertexIds: [number, number]
 }

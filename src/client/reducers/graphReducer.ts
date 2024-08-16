@@ -1,15 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import Project from 'interfaces/Project';
+import ProjectProperties from 'interfaces/ProjectProperties';
 import Vertex from 'interfaces/Vertex';
 import Edge from 'interfaces/Edge';
 import ProjectState from "interfaces/ProjectState";
-import EmptyProject from "../../common/classes/EmptyProject";
 
 // state represents current project
 const initialState: ProjectState = {
-  workingProject: new EmptyProject(),
-  lastSavedProject: new EmptyProject()
-}
+  workingProject: {} as ProjectProperties,
+  lastSavedProject: {} as ProjectProperties
+};
 
 const graphSlice = createSlice({
   name: 'graph',
@@ -18,7 +17,7 @@ const graphSlice = createSlice({
     /* individual state changes do NOT update the db - 
     we'll have save button to batch update db with all graph changes since last save */
 
-    setCurrentProject(state, action: PayloadAction<Project>) {
+    setCurrentProject(state, action: PayloadAction<ProjectProperties>) {
       // use when loading project from grid view or creating new project from scratch
       // creating new project should add new Project document to the db and immediately retrieve record
       Object.assign(state, action.payload);
@@ -41,7 +40,7 @@ const graphSlice = createSlice({
     deleteVertexById(state, action: PayloadAction<number>) {
       // requires deleting vertex and any edges attached to it
       state.workingProject.vertices = state.workingProject.vertices.filter(v => v.id !== action.payload)
-      state.workingProject.edges = state.workingProject.edges.filter(e => !e.endpoints.includes(action.payload));
+      state.workingProject.edges = state.workingProject.edges.filter(e => !e.endpointVertexIds.includes(action.payload));
     },
 
     modifyVertex(state, action: PayloadAction<Vertex>) {
@@ -67,7 +66,7 @@ const graphSlice = createSlice({
     modifyEdgeEndpoints(state, action: PayloadAction<Edge>) {
       // send payload representing new edge data - id and desired endpoint vertices
       state.workingProject.edges.forEach(e => {
-        if (e.id === action.payload.id) e.endpoints = action.payload.endpoints;
+        if (e.id === action.payload.id) e.endpointVertexIds = action.payload.endpointVertexIds;
       });
     }
   }

@@ -2,6 +2,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+console.log('configured')
+console.log(process.env.MONGO_URI)
+
 const { NODE_ENV, PORT, MONGO_URI, SECRET_KEY, SECRET_IV, ENCRYPTION_METHOD } = process.env;
 
 export default {

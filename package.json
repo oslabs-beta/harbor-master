@@ -6,7 +6,9 @@
   "scripts": {
     "build:dev": "tsc --watch --preserveWatchOutput",
     "start:dev2": "nodemon dist/server/server.js & webpack -w",
-    "start:dev": "concurrently \"npm run build:dev\" \"webpack serve --mode development\" \"nodemon dist/server/server.js\""
+    "start:dev": "concurrently \"npm run build:dev\" \"webpack serve --mode development\" \"nodemon dist/server/server.js\"",
+    "build":"webpack",
+    "start":"node dist/server/server.js"
   },
   "keywords": [],
   "author": "",
