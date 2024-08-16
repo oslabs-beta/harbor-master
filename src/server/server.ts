@@ -64,17 +64,17 @@ app.post('/deploy/:id', getProjectById, deployProject, (req, res) => {
 
 // auth controller
 app.get('/login', githubLogin);
-app.get('/auth-callback', callback, getUser, verifyUser, (req, res) => res.json({ register: 'success' }));
+app.get('/auth-callback', callback);
 app.get('/get-repos', getRepositories, (req, res) => {
   res.json(res.locals.repos);
 });
-app.get('/get-user', getUser, verifyUser, (req, res) => {
+app.get('/get-user', getUser, verifyUser, getRepositories, (req, res) => {
   res.json(res.locals.user);
 });
 
 // mock endpoint to check db, for development only
 app.get('/read-db', async (req, res) => {
-  const response = await ProjectModel.find();
+  const response = await UserModel.find();
   res.json(response);
 });
 

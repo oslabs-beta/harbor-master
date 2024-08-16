@@ -26,7 +26,7 @@ export const callback: AsyncMiddleware = async (req, res, next) => {
     const { access_token, token_type } = githubResponse;
     res.cookie('githubAuthToken', access_token, { httpOnly: true });
     res.locals.token = access_token;
-    return next();
+    return res.redirect('http://localhost:8080')
   } 
   catch (error) {
     return next({ 
