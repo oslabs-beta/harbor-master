@@ -209,6 +209,7 @@ resource "google_cloudbuildv2_repository" "my-repository" {
 }
 
 resource "google_cloudbuild_trigger" "my-trigger" {
+  depends_on = [google_cloudbuildv2_connection.my-connection]
   location = "COMPUTE_REGION"
   name     = "cbTrgName"
   repository_event_config {

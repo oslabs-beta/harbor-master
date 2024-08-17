@@ -17,9 +17,13 @@ require('dotenv').config();
 
 const fetch = require('node-fetch');
 const app = express();
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../../public')));
+
 app.use(
   cors({
-    origin: `http://localhost:8080`,
+    origin: `http://localhost:3000`,
   })
 );
 app.use(express.json());
@@ -27,9 +31,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(loggerMiddleware);
 
-app.use(express.static(path.join(__dirname, '../../public')));
 const ashraf_metrics = require('./routes/ashraf_routes');
-
 app.use('/metrics', ashraf_metrics);
 app.use('/api/clusters', clusters);
 
@@ -38,7 +40,7 @@ const uploadFileMiddleware = uploadService.generateUploadMiddleware();
 
 app.get('/', (req, res, next) => {
   try {
-    res.send('index.html');
+    res.sendFile(path.join(__dirname, '../../public/index.html')); // Serve the main HTML file
   } catch (error) {
     return next({
       log: 'Error sending index.html to client',
@@ -80,6 +82,8 @@ app.get('/read-db', async (req, res) => {
 
 // global error handling
 app.use(handleError);
+
+app.use((req, res) => {res.sendFile(path.join(__dirname, '../../public', 'index.html'))});
 
 app.listen(config.port, () => {
   console.log(`App listening on port ${config.port}`);

@@ -9,10 +9,11 @@ import UserDeploymentOptions from 'interfaces/UserDeploymentOptions';
 import DeploymentProperties from 'interfaces/DeploymentProperties';
 
 export const createProject: AsyncMiddleware = async (req, res, next) => {
+  console.log(req.body);
+  console.log(req.files);
   const encryptionService = new EncryptionService();
   const uploadService = new UploadService();
   const deploymentService = new DeploymentService();
-
   try {
     deploymentService.validateProperties({ ...req.body });
   }

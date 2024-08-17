@@ -16,7 +16,6 @@ class DeploymentService {
   }
 
   validateProperties(properties: object) {
-    console.log(properties);
     const validDeploymentProperties = [
       'appId',
       'projId',

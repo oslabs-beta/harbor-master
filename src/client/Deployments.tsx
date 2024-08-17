@@ -1,3 +1,4 @@
+import { nextTick } from 'process';
 import React, { useState } from 'react';
 
 const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
@@ -39,7 +40,7 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
   },
   arName: {
     label: 'Artifact Name',
-    subLabel: 'Name of the artifact to be managed Example hb/test',
+    subLabel: 'Name of the artifact to be managed MUST BE IN BLANK/BLANK FORMAT Example hb/test',
   },
   npName: {
     label: 'Node Pool Name',
@@ -47,18 +48,18 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
   },
   nodeCount: {
     label: 'Node Count',
-    subLabel: 'Number of nodes in the node pool.',
+    subLabel: 'Number of node pools.',
   },
   cbConName: {
-    label: 'Connection Name',
+    label: 'Cloudbuild Connection Name',
     subLabel: 'Name of the connection to be used.',
   },
   cbRepName: {
-    label: 'Repository Name',
+    label: 'Cloudbuild Repository Name',
     subLabel: 'Name of the repository for your project.',
   },
-  cTrgName: {
-    label: 'Trigger Name',
+  cbTrgName: {
+    label: 'Cloubdbuild Trigger Name',
     subLabel: 'Name of the trigger for the build process.',
   },
   branchName: {
@@ -83,17 +84,17 @@ const Deployments: React.FC = () => {
     nodeCount: '',
     cbConName: '',
     cbRepName: '',
-    cTrgName: '',
+    cbTrgName: '',
     branchName: '',
   };
 
-  const [formData, setFormData] = useState(initialData);
+  const [formDatas, setFormDatas] = useState(initialData);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormDatas({
+      ...formDatas,
       [name]: value,
     });
   };
@@ -104,15 +105,29 @@ const Deployments: React.FC = () => {
     }
   };
 
+  const createProject = async (info:object):Promise<void>=>{
+    const formData = new FormData();
+    for(const [key,value] of Object.entries(info)) formData.append(key,value)
+    formData.forEach((value, key) => console.log(`${key}:`, value));
+    const response = await fetch('/create-project',{
+      method:'POST',
+      body: formData
+    }).then(data=>data.json()).then(data=>data.id);
+    
+    const deploy = await fetch(`/deploy/${response}`,{
+      method:'POST'
+    })
+    console.log(deploy);
+  }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formPayload = {
-      ...formData,
+      ...formDatas,
       file: selectedFile,
     };
 
     console.log('Form submitted:', formPayload);
-
+    createProject(formPayload);
     // Perform further actions such as sending the data to a backend
   };
 
@@ -123,7 +138,7 @@ const Deployments: React.FC = () => {
     >
       <h1 className='text-2xl font-bold mb-4 text-gray-800'>Deployment Form</h1>
 
-      {Object.keys(formData).map((key) => (
+      {Object.keys(formDatas).map((key) => (
         <div key={key} className='flex flex-col'>
           <label
             htmlFor={key}
@@ -141,7 +156,7 @@ const Deployments: React.FC = () => {
             type='text'
             id={key}
             name={key}
-            value={formData[key as keyof typeof formData]}
+            value={formDatas[key as keyof typeof formDatas]}
             onChange={handleChange}
             className='p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
           />

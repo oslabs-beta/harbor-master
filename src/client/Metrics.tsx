@@ -56,8 +56,19 @@ export default function Metrics() {
     setTo(e.$y + '-' + (Number(e.$M)+1) + '-' + e.$D + 'T' + e.$H + ':' + e.$m + ':' + '00Z');
   };
 
+  const getMetrics = ()=>{
+    fetch('/metrics',{
+      method:'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({'filename':(document.getElementById('filename') as HTMLInputElement).value,'project':(document.getElementById('project') as HTMLInputElement).value})
+    })
+  }
+
   return (
     <div>
+      
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={['DateTimePicker']}>
         <DateTimePicker label={from} onAccept={(newValue) => fromDatePicked(newValue)} />
