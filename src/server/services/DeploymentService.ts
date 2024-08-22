@@ -136,4 +136,4 @@ class DeploymentService {
   }
 }
 
-export default DeploymentService;
+export default new DeploymentService();

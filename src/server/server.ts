@@ -2,14 +2,14 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import config from './config/envConfig';
-import { createProject, getProjectById, deployProject } from './controllers/projectController';
-import { githubLogin, callback, getRepositories, getUser, verifyUser } from './controllers/userController';
-import { handleError } from './controllers/errorController';
-import UploadService from './services/UploadService';
+import projectController from './controllers/ProjectController';
+import userController from './controllers/UserController';
+import errorController from './controllers/ErrorController';
+import uploadService from './services/UploadService';
 import { ProjectModel, UserModel } from './config/mongoConfig';
 
 import * as bodyParser from 'body-parser';
-import clusters from './routes/clusters';
+import clusters from './routes/clusterRouter';
 import loggerMiddleware from './middlewares/logger';
 import cors from 'cors';
 
@@ -33,7 +33,6 @@ const ashraf_metrics = require('./routes/ashraf_routes');
 app.use('/metrics', ashraf_metrics);
 app.use('/api/clusters', clusters);
 
-const uploadService = new UploadService();
 const uploadFileMiddleware = uploadService.generateUploadMiddleware();
 
 app.get('/', (req, res, next) => {
@@ -52,23 +51,23 @@ app.get('/api', (req, res) => {
 });
 
 // project controller
-app.post('/create-project', uploadFileMiddleware, createProject, (req, res) => {
+app.post('/create-project', uploadFileMiddleware, projectController.createProject, (req, res) => {
   res.json({ id: res.locals.id });
 });
-app.get('/get-project/:id', getProjectById, (req, res) => {
+app.get('/get-project/:id', projectController.getProjectById, (req, res) => {
   res.json(res.locals.project)
 })
-app.post('/deploy/:id', getProjectById, deployProject, (req, res) => {
+app.post('/deploy/:id', projectController.getProjectById, projectController.deployProject, (req, res) => {
   res.sendStatus(200);
 })
 
 // auth controller
-app.get('/login', githubLogin);
-app.get('/auth-callback', callback);
-app.get('/get-repos', getRepositories, (req, res) => {
+app.get('/login', userController.githubLogin);
+app.get('/auth-callback', userController.callback);
+app.get('/get-repos', userController.getRepositories, (req, res) => {
   res.json(res.locals.repos);
 });
-app.get('/get-user', getUser, verifyUser, getRepositories, (req, res) => {
+app.get('/get-user', userController.getUser, userController.verifyUser, userController.getRepositories, (req, res) => {
   res.json(res.locals.user);
 });
 
@@ -79,7 +78,7 @@ app.get('/read-db', async (req, res) => {
 });
 
 // global error handling
-app.use(handleError);
+app.use(errorController.handleError);
 
 app.listen(config.port, () => {
   console.log(`App listening on port ${config.port}`);
