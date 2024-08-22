@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
-import ClusterController from '../controllers/clusterController';
+import clusterController from '../controllers/ClusterController';
 
 const router = express.Router();
 
 //TODO THIS ENDPOINT NOT NEEDED
 router.get(
   '/clusters',
-  ClusterController.getClusterList,
+  clusterController.getClusterList,
   (req: Request, res: Response): void => {
     res.json({ RouteName: 'nodes-pods-maping-Route' });
   }
@@ -15,7 +15,7 @@ router.get(
 //TODO THIS ENDPOINT NOT NEEDED
 router.get(
   '/nodes',
-  ClusterController.getNodeList,
+  clusterController.getNodeList,
   (req: Request, res: Response): void => {
     res.json({ RouteName: 'node-list-Route' });
   }
@@ -24,7 +24,7 @@ router.get(
 //TODO THIS ENDPOINT NOT NEEDED
 router.get(
   '/pods',
-  ClusterController.getPodList,
+   clusterController.getPodList,
   (req: Request, res: Response): void => {
     res.json({ RouteName: 'pod-list-Route' });
   }
@@ -32,7 +32,7 @@ router.get(
 
 router.get(
   '/details',
-  ClusterController.getClusterMapping,
+  clusterController.getClusterMapping,
   (req: Request, res: Response): void => {
     res.json({ RouteName: 'nodes-pods-maping-Route' });
   }

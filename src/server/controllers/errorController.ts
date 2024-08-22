@@ -1,7 +1,10 @@
-import { ErrorHandlingMiddleware } from "types/Middleware";
+import { Request, Response, NextFunction } from "express";
 
-export const handleError: ErrorHandlingMiddleware = (err, req, res, next) => {
-  const defaultErr = {
+class ErrorController {
+  constructor () { }
+
+  handleError(err: Error, req: Request, res: Response, next: NextFunction) {
+    const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
     status: 500,
     message: 'An error occurred', 
@@ -9,4 +12,7 @@ export const handleError: ErrorHandlingMiddleware = (err, req, res, next) => {
   const errorObj = Object.assign(defaultErr, err);
   console.log(errorObj.log);
   res.status(errorObj.status).json(errorObj.message);
-};
+  }
+}
+
+export default new ErrorController();

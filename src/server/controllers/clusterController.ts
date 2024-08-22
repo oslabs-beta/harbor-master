@@ -17,6 +17,7 @@ const projectName = 'harbor-master-430602';
 const endpointIP = '34.173.62.141';
 
 class ClusterController {
+  constructor() { }
   //TODO THIS MIDDLEWARE NO LONGER NEEDED
   public async getClusterList(
     req: Request,
