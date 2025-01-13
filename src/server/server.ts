@@ -65,23 +65,23 @@ app.get('/', (req, res, next) => {
 });
 
 // mock endpoint to check db, for development only
-app.get('/read-db-user', async (req, res) => {
-  const response = await UserModel.find();
-  res.json(response);
-});
-app.get('/read-db-proj', async (req, res) => {
-  const response = await ProjectModel.find();
-  res.json(response);
-});
+// app.get('/read-db-user', async (req, res) => {
+//   const response = await UserModel.find();
+//   res.json(response);
+// });
+// app.get('/read-db-proj', async (req, res) => {
+//   const response = await ProjectModel.find();
+//   res.json(response);
+// });
 //only for dev
-app.get('/clear-db', async (req,res) => {
-  const response = await ProjectModel.deleteMany({__v:0})
-  res.json(response);
-})
+// app.get('/clear-db', async (req,res) => {
+//   const response = await ProjectModel.deleteMany({__v:0})
+//   res.json(response);
+// })
 
 app.get('/test', async(req,res) => {
 
-  // const newUser = await UserModel.findOneAndUpdate({githubHandle:'Crossur'},{ $pull: { projects:'671ef2eee4ed40dfd6ae0f7e'} },{ new: true, useFindAndModify: false });
+  const newUser = await UserModel.findOneAndUpdate({githubHandle:'Crossur'},{ $pull: { projects:'678448d5abaf1f62c11b72e3'} },{ new: true, useFindAndModify: false });
   // const createdProject = await ProjectModel.create({ 
   //   // userId,
   //   appInstallationId:"A",
@@ -98,8 +98,8 @@ app.get('/test', async(req,res) => {
   //   githubUrl:"a",
   //   isDeployed:false
   // });
-  const newProject = await ProjectModel.findByIdAndDelete({_id:'6732b145ed35f4fe915250fe'});
-  res.send(newProject);
+  // const newProject = await ProjectModel.findByIdAndDelete({_id:'6732b145ed35f4fe915250fe'});
+  res.send(newUser);
 })
 
 app.get('/xterm',async(req,res)=>{
