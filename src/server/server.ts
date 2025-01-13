@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, '../../public')));
 //   next();
 // });
 
-app.use(cors({origin: `http://34.71.203.49:3000`,}));
+app.use(cors({origin: `http://35.202.126.33:3000`,}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());

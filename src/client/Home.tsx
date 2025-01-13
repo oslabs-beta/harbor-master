@@ -182,7 +182,7 @@ const Home: React.FC = () => {
   </a>
 
   <a
-    href='http://34.71.203.49:3000/auth/github'
+    href='http://35.202.126.33:3000/auth/github'
     className='inline-flex items-center justify-center no-underline w-full px-4 py-2.5 mt-4 overflow-hidden text-md text-white transition-colors duration-300 bg-custom-blue rounded-lg shadow sm:w-auto sm:mx-2 sm:mt-0 hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80'
   >
     <svg
