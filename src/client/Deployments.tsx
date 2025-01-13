@@ -1,18 +1,31 @@
-import { nextTick } from 'process';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ProjectModal from './ProjectModal';
+import { useAppDispatch } from './hooks';
+import { addProject } from '../common/slices/userSlice';
+import { useLocation } from 'react-router-dom';
+import ghLogoGray from './images/ghLogoGray.png';
+import ghLogoBlue from './images/ghLogoBlue.png';
+
+interface Repo{
+  "id": number,
+  "node_id": string,
+  "name": string,
+  "full_name": string,
+  "clone_url":string
+}
 
 const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
   appId: {
     label: 'Application ID',
-    subLabel: 'Enter your application ID here.',
+    subLabel: 'Enter your application ID from Cloudbuild app on Github here.',
   },
   projId: {
     label: 'Project ID',
-    subLabel: 'Enter the project ID associated with your application.',
+    subLabel: 'The id for your project',
   },
   projNum: {
     label: 'Project Number',
-    subLabel: 'The unique number for the project.',
+    subLabel: 'The unique number for your project.',
   },
   saMail: {
     label: 'Service Account Email',
@@ -28,11 +41,7 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
   },
   ghTok: {
     label: 'GitHub Token',
-    subLabel: 'Personal access token for GitHub API access.',
-  },
-  ghURL: {
-    label: 'GitHub Repository URL',
-    subLabel: 'URL of the GitHub repository.',
+    subLabel: 'Personal access token for GitHub',
   },
   cName: {
     label: 'Cluster Name',
@@ -44,27 +53,27 @@ const fieldDetails: { [key: string]: { label: string; subLabel?: string } } = {
   },
   npName: {
     label: 'Node Pool Name',
-    subLabel: 'Name of the node pool in your cluster.',
+    subLabel: 'What you want the node pool to be named',
   },
   nodeCount: {
     label: 'Node Count',
-    subLabel: 'Number of node pools.',
+    subLabel: 'How many nodes you want in your cluster (3 is average)',
   },
   cbConName: {
     label: 'Cloudbuild Connection Name',
-    subLabel: 'Name of the connection to be used.',
+    subLabel: 'What you want the Cloudbuild Connection name to be',
   },
   cbRepName: {
     label: 'Cloudbuild Repository Name',
-    subLabel: 'Name of the repository for your project.',
+    subLabel: 'What you want the Cloudbuild Repository name to be',
   },
   cbTrgName: {
-    label: 'Cloubdbuild Trigger Name',
-    subLabel: 'Name of the trigger for the build process.',
+    label: 'Cloudbuild Trigger Name',
+    subLabel: 'What you want the Cloudbuild Trigger name to be',
   },
   branchName: {
     label: 'Branch Name',
-    subLabel: 'Name of the branch in your repository.',
+    subLabel: 'Name of the branch in your GH repository you want the CI/CD to be based on',
   },
 };
 
@@ -77,7 +86,6 @@ const Deployments: React.FC = () => {
     compR: '',
     compZ: '',
     ghTok: '',
-    ghURL: '',
     cName: '',
     arName: '',
     npName: '',
@@ -90,6 +98,22 @@ const Deployments: React.FC = () => {
 
   const [formDatas, setFormDatas] = useState(initialData);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showAlrDeployedModal, setAlrDeployedModal] = useState(false);
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [ghURL, setghURL] = useState<string>();
+  const dispatch = useAppDispatch();
+  const [hoveredRepo, setHoveredRepo] = useState<string|null>(null);
+  const location = useLocation();
+  let projectId: number;
+  
+  useEffect(() => {
+    const fetchRepos = async () => {
+      const response = await fetch('/api/users/get-repos').then(data=>data.json());
+      setRepos(response);
+    };
+    fetchRepos();
+  },[ghURL]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -105,89 +129,199 @@ const Deployments: React.FC = () => {
     }
   };
 
-  const createProject = async (info:object):Promise<void>=>{
+  const handleRepoSelect = (repoUrl: string) => {
+    setghURL(repoUrl)
+    setFormDatas(prevState => {
+      const updatedState = {
+        ...prevState,
+        ghURL: repoUrl,
+      };
+      console.log('Updated formDatas in handleRepoChange:', updatedState);
+      return updatedState;
+    });
+  };
+
+  const createProject = async (info: object): Promise<void> => {
     const formData = new FormData();
-    for(const [key,value] of Object.entries(info)) formData.append(key,value)
+    for (const [key, value] of Object.entries(info)) formData.append(key, value as string);
     formData.forEach((value, key) => console.log(`${key}:`, value));
-    const response = await fetch('/create-project',{
-      method:'POST',
-      body: formData
-    }).then(data=>data.json()).then(data=>data.id);
-    
-    const deploy = await fetch(`/deploy/${response}`,{
-      method:'POST'
-    })
-    console.log(deploy);
-  }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/projects/create-project', {
+        method: 'POST',
+        body: formData,
+      }).then((data) => data.json());
+      const { exists, id } = response;
+      if (id) projectId = id;
+      if (exists === true) {
+        setAlrDeployedModal(true);
+        return;
+      }
+
+      const deploy = await fetch(`/api/projects/deploy/${id}`, {
+        method: 'POST',
+      });
+      if (deploy.status === 500) alert('Project was not deployed; there was an error');
+      else {
+        alert('Project Successfully deployed');
+        dispatch(addProject(id));
+        window.location.assign('/account');
+      }
+    } catch (error) {
+      console.error('Error deploying project', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAndContinue = async () => {
+    setLoading(true);
+    try {
+      await fetch(`/api/projects/deploy/${projectId}`, {
+        method: 'POST',
+      }).then((data) => console.log(data));
+    } catch (error) {
+      console.error('Error deleting and continuing', error);
+    } finally {
+      setLoading(false);
+      setAlrDeployedModal(false); // Close modal after action
+    }
+  };
+
+  const handleCancel = () => {
+    setAlrDeployedModal(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formPayload = {
       ...formDatas,
       file: selectedFile,
+      ghURL, // Add selected repository to form payload
     };
 
     console.log('Form submitted:', formPayload);
     createProject(formPayload);
-    // Perform further actions such as sending the data to a backend
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className='max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg space-y-6'
-    >
-      <h1 className='text-2xl font-bold mb-4 text-gray-800'>Deployment Form</h1>
+    <div className=''>
+      <h1 className='text-2xl font-bold mb-4 text-white text-center'>Deployment Form</h1>
+      <form
+        onSubmit={handleSubmit}
+        className='max-w-3xl mx-auto p-6 rounded-lg border-custom-blue border-3 h-[calc(100vh-12rem)] overflow-y-auto pb-8 scrollbar-hide'
+      >
+        {Object.keys(formDatas).map((key) => {
+          if(key!=='ghURL'){
+          return(
+            <div key={key} className='flex flex-col'>
+              <label
+                htmlFor={key}
+                className='text-lg font-semibold mb-2 capitalize text-blue-text'
+              >
+                {fieldDetails[key]?.label ||
+                  key.replace(/([A-Z])/g, ' $1').toUpperCase()}
+              </label>
+              {fieldDetails[key]?.subLabel && (
+                <p className='text-sm text-sub-text mb-2'>
+                  {fieldDetails[key].subLabel}
+                </p>
+              )}
+              <input
+                type='text'
+                id={key}
+                name={key}
+                value={formDatas[key as keyof typeof formDatas]}
+                onChange={handleChange}
+                className='p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-input-bg text-sub-text'
+              />
+            </div>)
+          }else return null;
+        })}
 
-      {Object.keys(formDatas).map((key) => (
-        <div key={key} className='flex flex-col'>
+        {/* GitHub Repos Dropdown */}
+        <div className='flex flex-col'>
           <label
-            htmlFor={key}
-            className='text-lg font-semibold mb-2 capitalize text-gray-700'
+            htmlFor='ghURL'
+            className='text-lg font-semibold mb-2 capitalize text-blue-text'
           >
-            {fieldDetails[key]?.label ||
-              key.replace(/([A-Z])/g, ' $1').toUpperCase()}
+            Select GitHub Repository
           </label>
-          {fieldDetails[key]?.subLabel && (
-            <p className='text-sm text-gray-500 mb-2'>
-              {fieldDetails[key].subLabel}
-            </p>
-          )}
+          <ul className="bg-dark-gray rounded-lg max-h-60 overflow-auto">
+            {repos.map((repo: Repo) => (
+              <li
+              onMouseEnter={()=>{setHoveredRepo(repo.clone_url)}}
+              onMouseLeave={()=>{setHoveredRepo(null)}}
+                key={repo.id}
+                className={`cursor-pointer rounded-lg hover:bg-blue-text hover:text-git-repo-text p-2 flex items-center ${ghURL === repo.clone_url ? 'bg-blue-text text-git-repo-text':'text-sub-text'}`}
+                onClick={() => {handleRepoSelect(repo.clone_url)}}
+              >
+                {ghURL === repo.clone_url || hoveredRepo === repo.clone_url ? 
+                <img
+                src={ghLogoBlue}
+                alt="GitHub Logo"
+                id={ghURL}
+                className={`h-5 w-5 mr-2`}
+              />
+              :<img
+              src={ghLogoGray}
+              alt="GitHub Logo"
+              id={ghURL}
+              className={`h-5 w-5 mr-2`}
+            />}
+                
+                {repo.full_name}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* File Upload Input */}
+        <div className='flex flex-col'>
+          <label
+            htmlFor='fileUpload'
+            className='text-lg font-semibold mb-2 capitalize text-blue-text'
+          >
+            Upload File
+          </label>
+          <p className='text-sm text-sub-text mb-2'>Choose a file to upload.</p>
           <input
-            type='text'
-            id={key}
-            name={key}
-            value={formDatas[key as keyof typeof formDatas]}
-            onChange={handleChange}
-            className='p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            type='file'
+            id='fileUpload'
+            name='fileUpload'
+            accept='.json'
+            onChange={handleFileChange}
+            className='p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sub-text'
           />
         </div>
-      ))}
 
-      {/* File Upload Input */}
-      <div className='flex flex-col'>
-        <label
-          htmlFor='fileUpload'
-          className='text-lg font-semibold mb-2 capitalize text-gray-700'
+        <button
+          type='submit'
+          className='mt-4 bg-custom-blue text-white py-3 px-6 rounded-lg shadow-lg font-semibold'
         >
-          Upload File
-        </label>
-        <p className='text-sm text-gray-500 mb-2'>Choose a file to upload.</p>
-        <input
-          type='file'
-          id='fileUpload'
-          name='fileUpload'
-          onChange={handleFileChange}
-          className='p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-        />
-      </div>
+          {!loading ? 'Deploy':'Deploying...'}
+        </button>
+        {loading && 
+        <ProjectModal
+          onDeleteAndContinue={handleDeleteAndContinue}
+          onClose={handleCancel}  
+          show={loading}
+          type={'deploying'}
+        />}
+      </form>
 
-      <button
-        type='submit'
-        className='w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
-      >
-        Submit
-      </button>
-    </form>
+      {/* Modal for deployment */}
+      {showAlrDeployedModal && (
+        <ProjectModal
+          onDeleteAndContinue={handleDeleteAndContinue}
+          onClose={handleCancel}
+          show={showAlrDeployedModal}
+          type={'alrDeployed'}
+        />
+      )}
+    </div>
   );
 };
 

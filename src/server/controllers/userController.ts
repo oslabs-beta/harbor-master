@@ -1,42 +1,34 @@
 import { AsyncMiddleware, Middleware } from "types/Middleware";
-import EncryptionService from "../services/EncryptionService";
 import { UserModel } from "../config/mongoConfig";
+import { renderDateViewCalendar } from "@mui/x-date-pickers";
 
-const { APP_CLIENT_ID, APP_CLIENT_SECRET } = process.env;
-const encryptionService = new EncryptionService();
-
-export const githubLogin: Middleware = (req, res, next) => {
-  const GITHUB_AUTH_STATE = encryptionService.encrypt('harbor-master');
-  const LOGIN_REDIRECT_URI = 'http://127.0.0.1:3000/auth-callback'; // for local only, not sure about prod
-  return res.redirect(`https://github.com/login/oauth/authorize?client_id=${APP_CLIENT_ID}&redirect_uri=${LOGIN_REDIRECT_URI}&state=${GITHUB_AUTH_STATE}`);
+const createUser: AsyncMiddleware = async (req,res,next) => {
+  const username = res.locals.username;
+  const email = res.locals.email;
+  const token = res.locals.token;
+  const newUser = await UserModel.create({
+    githubHandle:username,
+    email:email
+  });
+  res.locals.userID = newUser._id;
+  return next();
 }
 
-export const callback: AsyncMiddleware = async (req, res, next) => {
-  const { code, state } = req.query;
-  if (encryptionService.decrypt(state as string) !== 'harbor-master') return next({ log: 'authController.callback: state from request does not match. This may be a malicious request', status: 403, message: { err: 'You are not authorized to perform this action'} } );
-  try {
-    const response = await fetch(`https://github.com/login/oauth/access_token?client_id=${APP_CLIENT_ID}&client_secret=${APP_CLIENT_SECRET}&code=${code}`, 
-      { method: 'POST',
-        headers: {
-          Accept: 'application/json'
-        }
-       }
-    );
-    const githubResponse = await response.json();
-    const { access_token, token_type } = githubResponse;
-    res.cookie('githubAuthToken', access_token, { httpOnly: true });
-    res.locals.token = access_token;
-    return res.redirect('http://localhost:8080')
-  } 
-  catch (error) {
-    return next({ 
-      log: `authController.callback: ${error}`, 
-      message: { err: 'Server error while trying to log in with GitHub' } 
-    });
+const checkUser: AsyncMiddleware = async (req,res,next) => {
+  console.log('in check user');
+  const username = res.locals.username;
+  const user = await UserModel.findOne({githubHandle:username});
+  console.log(user,'user');
+  if(user === null) return next();
+  res.locals.user = user;
+  if(user?.githubHandle === null) return next();
+  else{
+    return res.redirect('/account');
   }
-};
+}
 
-export const getUser: AsyncMiddleware = async (req, res, next) => {
+const getUsername: AsyncMiddleware = async (req, res, next) => {
+  if(res.locals.project) console.log(res.locals.project);
   const token = req.cookies.githubAuthToken;
   const response = await fetch('https://api.github.com/user', {
     headers: {
@@ -44,19 +36,17 @@ export const getUser: AsyncMiddleware = async (req, res, next) => {
     }
   });
   const user = await response.json();
-  res.locals.login = user.login;
-  res.locals.email = user.email;
+  res.locals.username = user.login;
   return next();
 }
 
-export const verifyUser: AsyncMiddleware = async (req, res, next) => {
-  const { login, email } = res.locals;
-  const user = await UserModel.findOne({ email }) || await UserModel.create({ email, githubHandle: login });
-  res.locals.user = user;
-  return next();
+const verifyUser: AsyncMiddleware = async (req, res, next) => {
+  const { username } = res.locals;
+  const user = await UserModel.findOne({githubHandle:username});
+  return res.status(200).json(user);
 }
 
-export const getRepositories: AsyncMiddleware = async (req, res, next) => {
+const getRepositories: AsyncMiddleware = async (req, res, next) => {
   const token = req.cookies.githubAuthToken;
   const response = await fetch('https://api.github.com/user/repos', {
     headers: {
@@ -67,3 +57,17 @@ export const getRepositories: AsyncMiddleware = async (req, res, next) => {
   res.locals.repos = repos;
   return next();
 };
+
+const getUser: AsyncMiddleware = async (req,res,next) => {
+  const user = await UserModel.findOne({githubHandle:res.locals.username});
+  res.json(user);
+}
+
+module.exports = {
+  createUser,
+  getUsername,
+  verifyUser,
+  getRepositories,
+  checkUser,
+  getUser
+}

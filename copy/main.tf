@@ -20,7 +20,6 @@ terraform {
 }
 locals {
   services = [
-    "cloudresourcemanager.googleapis.com",
     "gkehub.googleapis.com",
     "cloudbuild.googleapis.com",
     "secretmanager.googleapis.com",
@@ -99,6 +98,7 @@ provider "docker" {
 }
 
 resource "docker_image" "image" {
+  depends_on = [ google_artifact_registry_repository.artifact ]
   name = "us.gcr.io/PROJECT_ID/arName:latest"
   build {
     context = ""
@@ -106,7 +106,14 @@ resource "docker_image" "image" {
   }
 }
 
+resource "google_project_service" "cloud_resource_manager" {
+  project = "PROJECT_ID"
+  service = "cloudresourcemanager.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "enabled_service" {
+  depends_on = [google_project_service.cloud_resource_manager]
   for_each = toset(local.services)
   project = "PROJECT_ID"
   service = each.key
@@ -116,26 +123,26 @@ resource "google_project_service" "enabled_service" {
 resource "google_container_cluster" "primary" {
   depends_on = [google_project_service.enabled_service]
   name     = "cName"
-  location = "COMPUTE_REGION"
+  location = "COMPUTE_ZONE"
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
   remove_default_node_pool = true
-  initial_node_count       = 1
   deletion_protection = false
+  initial_node_count = 1
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   depends_on = [google_container_cluster.primary]
   name       = "npName"
-  location   = "COMPUTE_REGION"
+  location   = "COMPUTE_ZONE"
   cluster    = google_container_cluster.primary.name
   node_count = 1
-
+  
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
-
+    
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = "SA_EMAIL"
     oauth_scopes    = [

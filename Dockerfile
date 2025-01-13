@@ -7,7 +7,9 @@ ARG SECRET_IV
 ARG ENCRYPTION_METHOD
 ARG APP_CLIENT_ID
 ARG APP_CLIENT_SECRET
+ARG GH_REDIRECT_URI
 ARG MONGO_URI
+
 
 ENV PORT=${PORT}
 ENV SECRET_KEY=${SECRET_KEY}
@@ -15,6 +17,7 @@ ENV SECRET_IV=${SECRET_IV}
 ENV ENCRYPTION_METHOD=${ENCRYPTION_METHOD}
 ENV APP_CLIENT_ID=${APP_CLIENT_ID}
 ENV APP_CLIENT_SECRET=${APP_CLIENT_SECRET}
+ENV GH_REDIRECT_URI=${GH_REDIRECT_URI}
 ENV MONGO_URI=${MONGO_URI}
 
 # Install necessary packages and tools
@@ -37,6 +40,16 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Google Cloud SDK, Auth Plugin, and kubectl
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && apt-get update -y \
+    && apt-get install -y google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin kubectl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+
+
 # Install TypeScript globally
 RUN npm install -g typescript
 
@@ -53,7 +66,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run buildBoth
 
 # Copy the entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

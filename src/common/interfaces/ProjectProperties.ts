@@ -6,9 +6,9 @@ import DeploymentProperties from "./DeploymentProperties";
 export default interface ProjectProperties extends DeploymentProperties {
   id: string
   userId: string
-  deploymentOptions: UserDeploymentOptions
-  terraformState: object
+  deploymentOptions: UserDeploymentOptions;
   createdAt: string
   vertices: Vertex[]
   edges: Edge[]
+  isDeployed: Boolean
 }

@@ -14,12 +14,12 @@ const ProjectConfigSchema = new Schema<Project>({
   gcpComputeZone: String,
   gcpServiceAccounts: Array<ServiceAccountCredentials>,
   deploymentOptions: Object,
-  terraformState: Object,
   githubToken: String,
   githubUrl: String,
   createdAt: String,
   vertices: Array<Vertex>,
-  edges: Array<Edge>
+  edges: Array<Edge>,
+  isDeployed: Boolean
 });
 
 export default ProjectConfigSchema;

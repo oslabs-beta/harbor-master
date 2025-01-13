@@ -1,4 +1,3 @@
-//  controller file
 import express, { Request, Response, NextFunction } from 'express';
 const getMetrics = require('../utility_functions/extract_metrics');
 require('dotenv').config();

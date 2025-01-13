@@ -1,7 +1,16 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/client/index.tsx',
+  mode: 'production',
+  entry: './src/client/index.tsx', // Ensure correct entry point
+  output: {
+    path: path.resolve(__dirname, 'public'),
+    filename: 'bundle.js',
+    publicPath: '/',
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'], // Ensure '.ts' and '.tsx' are included
+  },
   module: {
     rules: [
       {
@@ -11,27 +20,29 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [require('tailwindcss'), require('autoprefixer')],
-              },
-            },
-          },
-        ],
+        use: ['style-loader', 'css-loader', 'postcss-loader'], // Handle CSS if needed
+      },
+      {
+        test: /\.(gif|png|jpe?g|svg)$/i,
+        type: 'asset/resource',
       },
     ],
   },
-  mode: 'development',
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    hot: true,
+    proxy: [
+      {
+        context: ['/'],
+        target: 'http://localhost:3000',
+      },
+    ], 
+    historyApiFallback: true,
   },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public'),
-  },
+  plugins: [
+    require('tailwindcss'),
+    require('autoprefixer'),
+  ],
 };

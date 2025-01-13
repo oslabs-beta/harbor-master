@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input:-webkit-autofill {
+  background-color: #2a343f; /* Replace with your desired background color */
+  color: #9b9c9e; /* Replace with your desired text color */
+}
+
+/* For Firefox */
+input:-moz-autofill {
+  background-color: #2a343f; /* Replace with your desired background color */
+  color: #9b9c9e; /* Replace with your desired text color */
+}
+
+/* For Edge */
+input:-ms-autofill {
+  background-color: #2a343f; /* Replace with your desired background color */
+  color: #9b9c9e; /* Replace with your desired text color */
+}
+
+.loading-dots {
+  display: inline-block;
+  animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '';
+  }
+  20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60% {
+    content: '...';
+  }
+  80% {
+    content: '..';
+  }
+  100% {
+    content: '.';
+  }
+}

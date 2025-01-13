@@ -49,7 +49,8 @@ class EncryptionService {
       auth_uri: this.encrypt(credentials.auth_uri),
       token_uri: this.encrypt(credentials.token_uri),
       auth_provider_x509_cert_url: this.encrypt(credentials.auth_provider_x509_cert_url),
-      client_x509_cert_url: this.encrypt(credentials.client_x509_cert_url)
+      client_x509_cert_url: this.encrypt(credentials.client_x509_cert_url),
+      universe_domain:'googleapis.com'
     };
     return encryptedCredentials;
   }
@@ -66,7 +67,8 @@ class EncryptionService {
       auth_uri: this.decrypt(credentials.auth_uri),
       token_uri: this.decrypt(credentials.token_uri),
       auth_provider_x509_cert_url: this.decrypt(credentials.auth_provider_x509_cert_url),
-      client_x509_cert_url: this.decrypt(credentials.client_x509_cert_url)
+      client_x509_cert_url: this.decrypt(credentials.client_x509_cert_url),
+      universe_domain:'googleapis.com'
     };
     return decryptedCredentials;
   }

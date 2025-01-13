@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import graphReducer from "./reducers/graphReducer";
+import userSlice from '../common/slices/userSlice';
 
 export const store = configureStore({
   reducer: {
-    graph: graphReducer
+    graph: graphReducer,
+    user: userSlice
   }
 });
 
