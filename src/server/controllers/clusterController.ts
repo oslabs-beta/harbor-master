@@ -7,7 +7,7 @@ import { getToken } from '../services/gkeService';
 import GcsCluster from 'interfaces/Cluster';
 
 // const keyFilename = '../keys/k8-test-428619-f078a86334f9.json';
-// const endpointIP = 'http://35.202.126.33:3000';
+// const endpointIP = 'http://35.225.171.67:3000';
 
 //TODO PASS THE KEY FILE NAME AND PROJECT NAME
 const keyFilename = '../keys/harbor-master-430602-f4f5fa8200ff.json';
